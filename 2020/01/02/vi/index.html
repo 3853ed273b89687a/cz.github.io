@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="擎天柱" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    vi |  擎天柱
+  </title>
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+<script src="/js/utils.js"></script>
+
+
+  
+
+  
+
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="擎天柱" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-vi" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  vi
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/01/02/vi/" class="article-date">
+  <time datetime="2020-01-02T12:23:03.000Z" itemprop="datePublished">2020-01-02</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p><font color='red'>此文特编辑</font></p>
+<p>1.跳转到命令行行首:ctrl+a<br>2.跳转到命令行行尾:ctrl+e<br>3.删除行首到光标位置的字符:ctrl+u<br>4.删除光标位置到行尾的字符:ctrl+k<br>5.清理屏幕:ctrl+l或者clear命令</p>
+<p>生命在于折腾,VI还是要练练的.很早之前就学过VI了，这次重新练练。</p>
+<h3 id="1-文件操作"><a href="#1-文件操作" class="headerlink" title="1. 文件操作"></a>1. 文件操作</h3><p>vi FileName 打开文件 FileName,并将光标置于第一行首。</p>
+<p>vi +n FileName 打开文件 FileName,并将光标置于第 n 行首。</p>
+<p>vi + FileName 打开文件 FileName,并将光标置于最后一行。</p>
+<p>vi + /pattern File 打开文件 File,并将光标置于其中第一个于 pattern 匹配的字符串处。</p>
+<p>vi –r FileName 在上次正用 vi 编辑 FileName 发生系统崩溃后,恢复FileName。</p>
+<h3 id="2-插入"><a href="#2-插入" class="headerlink" title="2. 插入"></a>2. 插入</h3><p>i 在光标前插入。</p>
+<p>a 在光标后插入。</p>
+<p>I 在当前行首插入。</p>
+<p>A 在当前行尾插入。</p>
+<p>o 在当前行之下一新行插入。</p>
+<p>O 在当前行之上新开一行插入。</p>
+<h3 id="3-光标的移动"><a href="#3-光标的移动" class="headerlink" title="3. 光标的移动"></a>3. 光标的移动</h3><p>1G 光标移动到文件第一行的行首。</p>
+<p>K 光标移动到文件上一行的同一列。</p>
+<p>h 光标移动到当前行的前一个字符。</p>
+<p>l 光标移动到当前行的后一个字符</p>
+<p>j 光标移动到下一行的同一列。</p>
+<p>G 光标移动到文件最后一行的行首。</p>
+<h3 id="4-整行的删除、移动"><a href="#4-整行的删除、移动" class="headerlink" title="4. 整行的删除、移动"></a>4. 整行的删除、移动</h3><p>dd 删除光标所在行</p>
+<p>yy 复制光标所在行</p>
+<p>p(小写)  在光标的下一行粘贴yy命令复制的行</p>
+<p>P(大写)  在光标的上一行粘贴yy命令复制的行</p>
+<p>J 对光标所在行和光标所在下一行进行合并成一行。</p>
+<h3 id="5-删除单个字符、删除一个单词"><a href="#5-删除单个字符、删除一个单词" class="headerlink" title="5. 删除单个字符、删除一个单词"></a>5. 删除单个字符、删除一个单词</h3><p>X(大写) 删除光标前一个字符</p>
+<p>X(小写）删除光标后一个字符</p>
+<p>xx   删除单个字符</p>
+<p>dw  删除一个单词</p>
+<h3 id="6-查找替换"><a href="#6-查找替换" class="headerlink" title="6. 查找替换"></a>6. 查找替换</h3><p>/ 在文件中查找输入的内容</p>
+<p>n 进入查询结果的下个内容（由光标所在行进行往上查询）</p>
+<p>N 进入查询结果的下个内容（由光标所在行进行往下查询）</p>
+<h3 id="7-回退操作"><a href="#7-回退操作" class="headerlink" title="7. 回退操作"></a>7. 回退操作</h3><p>u   回退之前的操作</p>
+<p>:e! 重新编辑当前文件,忽略所有的修改</p>
+<h3 id="8-文件保存"><a href="#8-文件保存" class="headerlink" title="8. 文件保存"></a>8. 文件保存</h3><p>ZZ 保存后退出文件</p>
+<p>:w保存并返回指令模式</p>
+<p>:w!覆盖已存在的文件</p>
+<p>:q退出</p>
+<p>:q!退出并丢掉所有未保存信息</p>
+<p>:wq!保存并退出</p>
+
+      
+      <!-- 打赏 -->
+      
+      
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.chengtianzhu.com/2020/01/02/vi/" data-id="cki5dath6000jwcndheb0ep7g"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vi/" rel="tag">vi</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vim/" rel="tag">vim</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/01/07/uniapp/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            uniapp
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/01/02/teasing/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">别再百度行天下了,多用google吧</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <div class="navbar-toggle">
+  <label>
+    <input type="checkbox">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55" />
+      <path class="line--2" d="M0 50h80" />
+      <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45" />
+    </svg>
+  </label>
+</div>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/logo.png" alt="擎天柱"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E7%BB%BC%E5%90%88/">综合</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/diary">小扎</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+
+<style>
+  .navbar-toggle path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    --length: 24;
+    --offset: -38;
+    stroke-dasharray: var(--length) var(--total-length);
+    stroke-dashoffset: var(--offset);
+    transition: all .8s cubic-bezier(.645, .045, .355, 1);
+  }
+</style>
+      </aside>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+
+      
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  
+  
+  </div>
+</body>
+
+</html>

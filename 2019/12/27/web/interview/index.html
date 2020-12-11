@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="擎天柱" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    总结网上的前端面试题 |  擎天柱
+  </title>
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+<script src="/js/utils.js"></script>
+
+
+  
+
+  
+
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="擎天柱" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-web/interview" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  总结网上的前端面试题
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2019/12/27/web/interview/" class="article-date">
+  <time datetime="2019-12-27T01:05:08.000Z" itemprop="datePublished">2019-12-27</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </div>
+
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>整理了网上的一些前端面试题,也算是为自己做一个笔记吧</p>
+<p> <font size=5>1. 什么是防抖和节流？有什么区别？如何实现？</font></p>
+<blockquote>
+<p>1.1 防抖</p>
+<p>触发高频事件后 n 秒内函数只会执行一次，如果 n 秒内高频事件再次被触发，则重新计算时间；</p>
+<p>1.2 节流</p>
+<p>高频事件触发，但在 n 秒内只会执行一次，所以节流会稀释函数的执行频率。</p>
+<p>每次触发事件时都判断当前是否有等待执行的延时函数。</p>
+</blockquote>
+<h3 id="html-amp-css"><a href="#html-amp-css" class="headerlink" title="html&amp; css"></a>html&amp; css</h3><p><font size=5>1.  简述一下src与href的区别</font></p>
+<blockquote>
+<p>href是指向网络资源所在位置，建立和当前元素（锚点）或当前文档（链接）之间的链接，用于超链接。<br>src是指向外部资源的位置，指向的内容将会嵌入到文档中当前标签所在位置；在请求src资源时会将其指向的资源下载并应用到文档内，例如js脚本，img图片和frame等元素。<br>当浏览器解析到该元素时，会暂停其他资源的下载和处理，直到将该资源加载、编译、执行完毕，图片和框架等元素也如此，类似于将所指向资源嵌入当前标签内。这也是为什么将js脚本放在底部而不是头部。</p>
+</blockquote>
+<p><font size=5>2.  Css单位px，rem，em，vw，vh的区别</font></p>
+<p>px</p>
+<blockquote>
+<p>px就是pixel像素的缩写，相对长度单位，网页设计常用的基本单位。像素px是相对于显示器屏幕分辨率而言的</p>
+</blockquote>
+<p>em</p>
+<blockquote>
+<p>em是相对长度单位。相对于当前对象内文本的字体尺寸（参考物是父元素的font-size）<br>如当前父元素的字体尺寸未设置，则相对于浏览器的默认字体尺寸<br>特点：<br>　　1. em的值并不是固定的；<br>　　2. em会继承父级元素的字体大小</p>
+</blockquote>
+<p>rem</p>
+<blockquote>
+<p>rem是CSS3新增的一个相对单位，rem是相对于HTML根元素的字体大小（font-size）来计算的长度单位<br>如果你没有设置html的字体大小，就会以浏览器默认字体大小，一般是16px</p>
+</blockquote>
+<pre><code>html{font-size: 62.5%}  /* 10 ÷ 16 × 100% = 62.5% */
+
+body{font-size: 1.4rem;} /* 1.4 × 10px = 14px */
+
+/*在根元素中定义了一个基本字体大小为62.5%（也就是10px。设置这个值主要方便计算，如果没有设置，将是以“16px”为基准 ）*/</code></pre><blockquote>
+<p>优点是，只需要设置根目录的大小就可以把整个页面的成比例的调好<br>rem兼容性：除了IE8及更早版本外，所有浏览器均已支持rem<br>em与rem的区别：<br>　　rem是相对于根元素（html）的字体大小，而em是相对于其父元素的字体大小<br>两者使用规则：<br>如果这个属性根据它的font-size进行测量，则使用em<br>其他的一切事物属性均使用rem<br>这里提供了一个px、em、rem单位的转换工具：<a href="http://pxtoem.com/" target="_blank" rel="noopener">http://pxtoem.com/</a></p>
+</blockquote>
+<p>vw、vh</p>
+<blockquote>
+<p>vw、vh、vmax、vmin这四个单位都是基于视口<br>vw是相对视口（viewport）的宽度而定的，长度等于视口宽度的1/100<br>假如浏览器的宽度为200px，那么1vw就等于2px（200px/100）<br>vh是相对视口（viewport）的高度而定的，长度等于视口高度的1/100<br>假如浏览器的高度为500px，那么1vh就等于5px（500px/100）<br>vmin和vmax是相对于视口的高度和宽度两者之间的最小值或最大值</p>
+</blockquote>
+<pre><code>/*
+如果浏览器的高为300px、宽为500px，那么1vmin就是3px，1vmax就是5px；如果浏览器的高为800px，宽为1080px，那么1vmin也是8px，1vmax也是10.8px
+*/</code></pre><p>其他单位：</p>
+<blockquote>
+<p>%（百分比）<br>一般来说就是相对于父元素<br>1、对于普通定位元素就是我们理解的父元素<br>2、对于position: absolute;的元素是相对于已定位的父元素<br>3、对于position: fixed;的元素是相对于ViewPort（可视窗口）</p>
+</blockquote>
+<p>vm</p>
+<blockquote>
+<p>css3新单位，相对于视口的宽度或高度中较小的那个<br>其中最小的那个被均分为100单位的vm<br>比如：浏览器高度900px，宽度1200px，取最小的浏览器高度，1 vm = 900px/100 = 9 px<br>缺点：兼容性差</p>
+</blockquote>
+<h3 id="JS"><a href="#JS" class="headerlink" title="JS"></a>JS</h3><ol>
+<li>(0.1 + 0.2) 等于多少 为什么?<blockquote>
+<p>0.30000000000000004<br>因为 JS 采用 IEEE 754 双精度版本（64位），并且只要采用 IEEE 754 的语言都有该问题。我们都知道计算机表示十进制是采用二进制表示的，所以 0.1 在二进制表示为</p>
+</blockquote>
+</li>
+</ol>
+<pre><code>0.1 = 2^-4 * 1.10011(0011) // (0011) 表示循环</code></pre><p>小数算二进制和整数不同。乘法计算时，只计算小数位，整数位用作每一位的二进制，并且得到的第一位为最高位。所以我们得出 0.1 = 2^-4 * 1.10011(0011)，那么 0.2 的演算也基本如上所示，只需要去掉第一步乘法，所以得出 0.2 = 2^-3 * 1.10011(0011)。</p>
+<p>回来继续说 IEEE 754 双精度。六十四位中符号位占一位，整数位占十一位，其余五十二位都为小数位。因为 0.1 和 0.2 都是无限循环的二进制了，所以在小数位末尾处需要判断是否进位（就和十进制的四舍五入一样）。</p>
+<p>所以 2^-4 * 1.10011…001 进位后就变成了 2^-4 * 1.10011(0011 * 12次)010 。那么把这两个二进制加起来会得出 2^-2 * 1.0011(0011 * 11次)0100 , 这个值算成十进制就是 0.30000000000000004</p>
+<p>下面说一下原生解决办法，如下代码所示</p>
+<h3 id="前端框架"><a href="#前端框架" class="headerlink" title="前端框架"></a>前端框架</h3><h4 id="VUE"><a href="#VUE" class="headerlink" title="VUE"></a>VUE</h4><h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://yq.aliyun.com/articles/613474" target="_blank" rel="noopener">几道高级前端面试题解析 https://yq.aliyun.com/articles/613474</a></p>
+
+      
+      <!-- 打赏 -->
+      
+      
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.chengtianzhu.com/2019/12/27/web/interview/" data-id="cki5dathx001hwcnddpd2ctww"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF%E9%9D%A2%E8%AF%95/" rel="tag">前端面试</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/01/02/teasing/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            别再百度行天下了,多用google吧
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2019/12/25/ssr/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">用梯子,看一看世界</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <div class="navbar-toggle">
+  <label>
+    <input type="checkbox">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55" />
+      <path class="line--2" d="M0 50h80" />
+      <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45" />
+    </svg>
+  </label>
+</div>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/logo.png" alt="擎天柱"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E7%BB%BC%E5%90%88/">综合</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/diary">小扎</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+
+<style>
+  .navbar-toggle path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    --length: 24;
+    --offset: -38;
+    stroke-dasharray: var(--length) var(--total-length);
+    stroke-dashoffset: var(--offset);
+    transition: all .8s cubic-bezier(.645, .045, .355, 1);
+  }
+</style>
+      </aside>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+
+      
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  
+  
+  </div>
+</body>
+
+</html>

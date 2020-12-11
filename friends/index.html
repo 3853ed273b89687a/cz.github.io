@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="擎天柱" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    friends |  擎天柱
+  </title>
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+  
+<script src="/js/utils.js"></script>
+
+
+  
+
+  
+
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="擎天柱" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <link rel="stylesheet" href="/css/friends.css">
+<section class="outer">
+        
+            
+            <div class="friend-wrapper">
+                
+                    
+                        <li>
+                            <a href="http://www.chengtianzhu.com/" target="_blank">擎天柱</a>
+                        </li>
+                
+                    
+                        <li>
+                            <a href="https://blog.xiluhuo.cn/" target="_blank">夏尔</a>
+                        </li>
+                
+            </div>
+        
+
+<!--    <div class="card">-->
+<!--        <div class="card-content">-->
+<!--            -->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="card">-->
+
+<!--        -->
+
+<!--        -->
+
+<!--    </div>-->
+    <canvas id="canvas"></canvas>
+</section>
+
+<script type="text/javascript" src="/js/friends/ThreeWebGL.js"></script>
+<script type="text/javascript" src="/js/friends/ThreeExtras.js"></script>
+
+<script type="text/javascript" src="/js/friends/Detector.js"></script>
+<script type="text/javascript" src="/js/friends/RequestAnimationFrame.js"></script>
+
+<script id="vs" type="x-shader/x-vertex">
+
+			varying vec2 vUv;
+
+			void main() {
+
+				vUv = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+		</script>
+
+<script id="fs" type="x-shader/x-fragment">
+
+			uniform sampler2D map;
+
+			uniform vec3 fogColor;
+			uniform float fogNear;
+			uniform float fogFar;
+
+			varying vec2 vUv;
+
+			void main() {
+
+				float depth = gl_FragCoord.z / gl_FragCoord.w;
+				float fogFactor = smoothstep( fogNear, fogFar, depth );
+
+				gl_FragColor = texture2D( map, vUv );
+				gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 );
+				gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+
+			}
+
+		</script>
+
+<script type="text/javascript">
+
+    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+    // Bg gradient
+
+    var canvas = document.createElement( 'canvas' );
+    canvas.width = 32;
+
+    canvas.height = window.innerHeight;
+
+    var context = canvas.getContext( '2d' );
+    var gradient = context.createLinearGradient( 0, 0, 0, canvas.height );
+    gradient.addColorStop(0, "#1e4877");
+    gradient.addColorStop(0.5, "#4584b4");
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    document.body.style.background = 'url(' + canvas.toDataURL('image/png') + ')';
+
+    // Clouds
+
+    var container;
+    var camera, scene, renderer, sky, mesh, geometry, material,
+        i, h, color, colors = [], sprite, size, x, y, z;
+
+    var mouseX = 0, mouseY = 0;
+    var start_time = new Date().getTime();
+
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+
+    init();
+    animate();
+
+    function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
+        camera = new THREE.Camera( 30, window.innerWidth / window.innerHeight, 1, 3000 );
+        camera.position.z = 6000;
+
+        scene = new THREE.Scene();
+
+        geometry = new THREE.Geometry();
+
+        var texture = THREE.ImageUtils.loadTexture( '/images/friends_cloud.png' );
+        texture.magFilter = THREE.LinearMipMapLinearFilter;
+        texture.minFilter = THREE.LinearMipMapLinearFilter;
+
+        var fog = new THREE.Fog( 0x4584b4, - 100, 3000 );
+
+        material = new THREE.MeshShaderMaterial( {
+
+            uniforms: {
+
+                "map": { type: "t", value:2, texture: texture },
+                "fogColor" : { type: "c", value: fog.color },
+                "fogNear" : { type: "f", value: fog.near },
+                "fogFar" : { type: "f", value: fog.far },
+
+            },
+            vertexShader: document.getElementById( 'vs' ).textContent,
+            fragmentShader: document.getElementById( 'fs' ).textContent,
+            depthTest: false
+
+        } );
+
+        var plane = new THREE.Mesh( new THREE.Plane( 64, 64 ) );
+
+        for ( i = 0; i < 8000; i++ ) {
+
+            plane.position.x = Math.random() * 1000 - 500;
+            plane.position.y = - Math.random() * Math.random() * 200 - 15;
+            plane.position.z = i;
+            plane.rotation.z = Math.random() * Math.PI;
+            plane.scale.x = plane.scale.y = Math.random() * Math.random() * 1.5 + 0.5;
+
+            GeometryUtils.merge( geometry, plane );
+
+        }
+
+        mesh = new THREE.Mesh( geometry, material );
+        scene.addObject( mesh );
+
+        mesh = new THREE.Mesh( geometry, material );
+        mesh.position.z = - 8000;
+        scene.addObject( mesh );
+
+        renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        container.appendChild( renderer.domElement );
+
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        window.addEventListener( 'resize', onWindowResize, false );
+
+    }
+
+    function onDocumentMouseMove( event ) {
+
+        mouseX = ( event.clientX - windowHalfX ) * 0.25;
+        mouseY = ( event.clientY - windowHalfY ) * 0.15;
+
+    }
+
+    function onWindowResize( event ) {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+        render();
+
+    }
+
+    function render() {
+
+        position = ( ( new Date().getTime() - start_time ) * 0.03 ) % 8000;
+
+        camera.position.x += ( mouseX - camera.target.position.x ) * 0.01;
+        camera.position.y += ( - mouseY - camera.target.position.y ) * 0.01;
+        camera.position.z = - position + 8000;
+
+        camera.target.position.x = camera.position.x;
+        camera.target.position.y = camera.position.y;
+        camera.target.position.z = camera.position.z - 1000;
+
+        renderer.render( scene, camera );
+
+    }
+
+</script>
+      <footer class="footer">
+  <div>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+      <aside class="sidebar">
+        
+        <div class="navbar-toggle">
+  <label>
+    <input type="checkbox">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55" />
+      <path class="line--2" d="M0 50h80" />
+      <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45" />
+    </svg>
+  </label>
+</div>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/logo.png" alt="擎天柱"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E7%BB%BC%E5%90%88/">综合</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/diary">小扎</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+
+<style>
+  .navbar-toggle path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    --length: 24;
+    --offset: -38;
+    stroke-dasharray: var(--length) var(--total-length);
+    stroke-dashoffset: var(--offset);
+    transition: all .8s cubic-bezier(.645, .045, .355, 1);
+  }
+</style>
+      </aside>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+
+      
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  
+  
+  </div>
+</body>
+
+</html>

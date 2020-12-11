@@ -1,0 +1,24 @@
+.friend-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.friend-wrapper li a {
+  display: block;
+  text-decoration: none;
+  border: 2px #79cbff solid;
+  background: #2af;
+  padding: 1rem 6rem;
+  margin: 1rem;
+  color: #fff;
+  white-space: nowrap;
+}
+.friend-wrapper li a:hover {
+  opacity: 0.8;
+}
+canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
