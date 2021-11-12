@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="擎天柱" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    docker/ssh |  擎天柱
+  </title>
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/cz.github.io/css/style.css">
+
+  
+<script src="/cz.github.io/js/pace.min.js"></script>
+
+  
+<script src="/cz.github.io/js/utils.js"></script>
+
+
+  
+
+  
+
+  
+<script src="/cz.github.io/js/jquery-2.0.3.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/cz.github.io/atom.xml" title="擎天柱" type="application/atom+xml">
+<link rel="stylesheet" href="/cz.github.io/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/cz.github.io/css/prism-line-numbers.css" type="text/css"></head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-docker-ssh" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  docker/ssh
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/cz.github.io/2020/05/18/docker-ssh/" class="article-date">
+  <time datetime="2020-05-18T04:09:27.000Z" itemprop="datePublished">2020-05-18</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="一、先安装docker"><a href="#一、先安装docker" class="headerlink" title="一、先安装docker"></a>一、先安装docker</h3><p>这个很简单，因为我的系统是win10，我安装的是Docker Desktop，最好是更改一下docker镜像</p>
+<h3 id="二、运行docker，并用docker安装centos系统"><a href="#二、运行docker，并用docker安装centos系统" class="headerlink" title="二、运行docker，并用docker安装centos系统"></a>二、运行docker，并用docker安装centos系统</h3><p>先看以下命令会不会报错</p>
+<pre><code>$ docker -v
+Docker version 19.03.8, build afacb8b
+$ docker-compose -v
+docker-compose version 1.25.4, build 8d51620a</code></pre><pre><code>docker pull centos   &lt;----执行这行，拉取镜像
+
+Using default tag: latest
+latest: Pulling from library/centos
+8a29a15cefae: Already exists
+Digest: sha256:fe8d824220415eed5477b63addf40fb06c3b049404242b31982106ac204f6700
+Status: Downloaded newer image for centos:latest
+docker.io/library/centos:late
+
+
+docker images      &lt;----执行这行,查看本地镜像
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hell178/lnmp        v1                  620a78c49b09        5 days ago          4GB
+centos              latest              470671670cac        4 months ago        237MB</code></pre><h3 id="三、进入容器并安装lnmp"><a href="#三、进入容器并安装lnmp" class="headerlink" title="三、进入容器并安装lnmp"></a>三、进入容器并安装lnmp</h3><p>执行命令,这里用了-v，是目录映射，用做mysql数据存储目录，如果你不是用的Lnmp一键环境包，那么需要注意mysql安装目录</p>
+<pre><code>docker run -it -v D:\docker\mysql:/usr/local/mysql/var centos</code></pre><p>使用git Bash进入容器，可能会报以下错误。</p>
+<pre><code>docker run -it centos
+the input device is not a TTY.  If you are using mintty, try prefixing the command with &#39;winpty&#39;</code></pre><p>建议使用windows PowerShell工具执行<br>1、在桌面上，按住shift不放，单击鼠标右键即可看到<br>2、按键盘上的win+x也有</p>
+<h3 id="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"><a href="#四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境" class="headerlink" title="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"></a>四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境</h3><p>先安装wget</p>
+<pre><code>yum -y install wget</code></pre><p>然后进到Lnmp官网，获取下载地址</p>
+<pre><code>lnmp官网地址 https://lnmp.org/install.html</code></pre><p>执行以下命令，按自己的喜好安装版本吧</p>
+<pre><code>wget http://soft.vpser.net/lnmp/lnmp1.6.tar.gz -cO lnmp1.6.tar.gz &amp;&amp; tar zxf lnmp1.6.tar.gz &amp;&amp; cd lnmp1.6 &amp;&amp; ./install.sh lnmp</code></pre><h3 id="五、安装ssh并使用密钥登录"><a href="#五、安装ssh并使用密钥登录" class="headerlink" title="五、安装ssh并使用密钥登录"></a>五、安装ssh并使用密钥登录</h3><p>安装openssh</p>
+<pre><code>yum install openssh-server openssh-clients -y</code></pre><p>修改/etc/ssh/sshd_config配置文件</p>
+<pre><code>vi /etc/ssh/sshd_config</code></pre><p>确定以下3个都没有被注释</p>
+<pre><code>HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key</code></pre><p>注意：某些资料中让把配置文件中的UsePAM yes改为UsePAM no，经过实际测试，修改后启动ssh服务将报错,其实这个不用注释也行的</p>
+<p>执行以下3条命令,生成对应的密钥,出现需要输入密码的地方，一路回车</p>
+<pre><code>ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_ecdsa_key
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_ed25519_key</code></pre><p>修改root密码</p>
+<pre><code>passwd</code></pre><p>启动ssh服务</p>
+<pre><code>/usr/sbin/sshd -D &amp;</code></pre><h3 id="六、构建镜像并上传"><a href="#六、构建镜像并上传" class="headerlink" title="六、构建镜像并上传"></a>六、构建镜像并上传</h3><p>lnmp安装好后，另外再开一个终端窗口。执行以下docker操作。千万别动刚才安装lnmp的窗口，否则刚才安装的东西全都没有了。</p>
+<pre><code>docker ps
+docker commit a0f2b58c74af lnmp
+docker tag lnmp:latest carl/lnmp:1.0
+docker push carl/lnmp:1.0</code></pre><p>等待推送完成后，在你的<a href="https://hub.docker.com/repositories即可看到了。" target="_blank" rel="noopener">https://hub.docker.com/repositories即可看到了。</a></p>
+<h3 id="八、编写docker-compose-yml"><a href="#八、编写docker-compose-yml" class="headerlink" title="八、编写docker-compose.yml"></a>八、编写docker-compose.yml</h3><ul>
+<li>注意点<pre><code>一般mysql数据存储到宿主机，而不是docker容器中，所有
+
+</code></pre></li>
+</ul>
+<p>以下为官网说明:<a href="https://lnmp.org/faq.html" target="_blank" rel="noopener">https://lnmp.org/faq.html</a><br>MySQL目录的更改，首先需要停掉mysql服务器/etc/init.d/mysql stop，下面新目录以/data/mysql/ 为例，然后cp -a /usr/local/mysql/var/* /data/mysql/，再chown mysql:mysql -R /data/mysql/ 下面再修改/etc/my.cnf ，查找[mysqld] ，在下面加入datadir = /data/mysql/ 保存，如果开启了innodb还需要修改innodb_data_home_dir 和innodb_log_group_home_dir为新的/data/mysql，启动mysql。</p>
+<pre><code></code></pre><h1 id="这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x"><a href="#这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x" class="headerlink" title="这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x"></a>这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x</h1><h1 id="使用docker-compose-v查看版本号-如果是1-xx，version就填2"><a href="#使用docker-compose-v查看版本号-如果是1-xx，version就填2" class="headerlink" title="使用docker-compose -v查看版本号,如果是1.xx，version就填2"></a>使用docker-compose -v查看版本号,如果是1.xx，version就填2</h1><p>version: ‘2’<br>services:<br>#服务名称，用户自定义<br>    lnmp:<br>#镜像名称/镜像ID，如果本地不存在compose会拉取镜像，填刚才构建的镜像名<br>        image: carl/lnmp:v1<br>#容器名称<br>#container_name: lnmp<br>#设置镜像变量，启动后的容器会包含这些变量设置<br>        environment:<br>            TZ: Asia/Shanghai<br>        volumes:<br>            - D:\works:/home/wwwroot<br>            - D:\docker\vhost:/usr/local/nginx/conf/vhost<br>#这里把Mysql数据存储目录映射到宿主机,在第三步有临时映射<br>            - D:\docker\mysql:/usr/local/mysql/var<br>        ports:<br>            - “80:80”<br>            - “81:81”<br>            - “82:82”<br>            - “10022:22”<br>            - “8090:8090”<br>            - “800:8080”<br>            - “10000:10000”<br>            - “443:443”<br>        command:<br>            - /bin/bash<br>            - -c<br>            - |<br>                lnmp start &amp;&amp; /usr/sbin/sshd -D &amp;<br>        tty: true</p>
+<pre><code>执行命令开始使用</code></pre><p>docker-compose exec lnmp /bin/bash</p>
+<pre><code>
+### 八、下次使用
+把网站内容映射到了linux容器中的/home/wwwroot中，vhost也映射了
+下次电脑重启了，有2种方式打开继续使用
+1、在docker-composer.yml执行命令</code></pre><p>docker-compose exec lnmp /bin/bash</p>
+<pre><code>2、docker desktop桌面工具，点击setting-&gt;右上角关闭-&gt;这里有容器列表
+
+
+### 其他可能注意的点
+1、如果Mysql没有启动，执行以下命令</code></pre><p>yum install initscripts -y</p>
+<pre><code>
+2、如果navicat mysql连接不上数据库，请参考</code></pre><p><a href="https://blog.csdn.net/me_Lany/article/details/82770948" target="_blank" rel="noopener">https://blog.csdn.net/me_Lany/article/details/82770948</a></p>
+<pre><code>
+参考站点：[https://www.jianshu.com/p/34a625621a9a](https://www.jianshu.com/p/34a625621a9a)</code></pre>
+      
+      <!-- 打赏 -->
+      
+      
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://3853ed273b89687a.github.io/2020/05/18/docker-ssh/" data-id="ckvw8915e0007ugnd7qd35le1"
+        class="article-share-link">分享</a>
+      
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/cz.github.io/2020/05/06/jsxlsx/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">使用vue+SheetJS/js-xlsx修改表头并导出excel</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <div class="navbar-toggle">
+  <label>
+    <input type="checkbox">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55" />
+      <path class="line--2" d="M0 50h80" />
+      <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45" />
+    </svg>
+  </label>
+</div>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/cz.github.io/"><img src="/images/logo.png" alt="擎天柱"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E7%BB%BC%E5%90%88/">综合</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/diary">小扎</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/about">关于</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+
+<style>
+  .navbar-toggle path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    --length: 24;
+    --offset: -38;
+    stroke-dasharray: var(--length) var(--total-length);
+    stroke-dashoffset: var(--offset);
+    transition: all .8s cubic-bezier(.645, .045, .355, 1);
+  }
+</style>
+      </aside>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/cz.github.io/">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/cz.github.io/">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+
+      
+<script src="/cz.github.io/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/cz.github.io/js/lazyload.min.js"></script>
+
+
+  
+<script src="/cz.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/cz.github.io/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/cz.github.io/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  
+  
+  </div>
+</body>
+
+</html>

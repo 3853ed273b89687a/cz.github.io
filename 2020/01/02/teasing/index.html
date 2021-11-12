@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="擎天柱" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    别再百度行天下了,多用google吧 |  擎天柱
+  </title>
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/cz.github.io/css/style.css">
+
+  
+<script src="/cz.github.io/js/pace.min.js"></script>
+
+  
+<script src="/cz.github.io/js/utils.js"></script>
+
+
+  
+
+  
+
+  
+<script src="/cz.github.io/js/jquery-2.0.3.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/cz.github.io/atom.xml" title="擎天柱" type="application/atom+xml">
+<link rel="stylesheet" href="/cz.github.io/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/cz.github.io/css/prism-line-numbers.css" type="text/css"></head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-teasing" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  别再百度行天下了,多用google吧
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/cz.github.io/2020/01/02/teasing/" class="article-date">
+  <time datetime="2020-01-02T02:20:57.000Z" itemprop="datePublished">2020-01-02</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>做为一名程序猿,会经常搜索问题，我的博客是用 git 管理项目,webhook 拉取代码,使用了 cloudflare 的 ssl 和 cdn，开启了缓存，所以每次 git push 了代码后，需要点击 cloudflare 中的 Purge Cache 清除,然后就百度了一下这个问题。</p>
+<p>发现如下文章<a href="https://www.minwt.com/website/server/21289.html" target="_blank" rel="noopener">免登後台！手動快速清除 CloudFlare 的 Page Rules 頁面快取 https://www.minwt.com/website/server/21289.html</a>,按操作直接复制粘贴,放到 mac bash 下执行，提示</p>
+<pre><code>-bash: br: No such file or directory</code></pre><p>咦,提示没有这样的文件或目录,我 curl 没装?<br>查看一下 crul,执行</p>
+<pre><code>curl --version</code></pre><p>发现有啊，然后果断去 cloudflare 官网看 api,发现百度到的文章多了几个 br</p>
+<pre><code>&lt;/br&gt;</code></pre><p>小坑了一把，然后放到自己的 webhook 中,完工</p>
+<blockquote>
+<p>curl -X DELETE “<a href="https://api.cloudflare.com/client/v4/zones/" target="_blank" rel="noopener">https://api.cloudflare.com/client/v4/zones/</a><font color="red">ZoneID</font>/purge_cache” <br> -H “X-Auth-Email: <font color="red">Email</font>“ <br> -H “X-Auth-Key: <font color="red">Global API Key</font>“ <br> -H “Content-Type: application/json” <br> –data ‘{“purge_everything”:true}’</p>
+</blockquote>
+<p>提示清除成功</p>
+<pre><code>{&quot;result&quot;:{&quot;id&quot;:&quot;c14fc1a5df8629ba7e1c7d153836b9ad&quot;},&quot;success&quot;:true,&quot;errors&quot;:[],&quot;messages&quot;:[]}</code></pre><p>最后吐槽一下，很多文章都是复制粘贴,格式错乱,严重影响阅读体验,很多时候,30%的精力浪费在填坑中,来自自己挖的坑,网上复制粘贴的坑,希望多点原创,少点ctrl+c。<br>答应我,别再百度行天下了.</p>
+<p><a href="https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns" target="_blank" rel="noopener">cloudflare 官方 api https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns</a></p>
+
+      
+      <!-- 打赏 -->
+      
+      
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://3853ed273b89687a.github.io/2020/01/02/teasing/" data-id="ckvw8915h000augnd66wz9xei"
+        class="article-share-link">分享</a>
+      
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/cz.github.io/2020/01/02/vi/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            vi
+          
+        </div>
+      </a>
+    
+    
+      <a href="/cz.github.io/2019/12/27/web/interview/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">总结网上的前端面试题</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <div class="navbar-toggle">
+  <label>
+    <input type="checkbox">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55" />
+      <path class="line--2" d="M0 50h80" />
+      <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45" />
+    </svg>
+  </label>
+</div>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/cz.github.io/"><img src="/images/logo.png" alt="擎天柱"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/">首页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/tags/%E7%BB%BC%E5%90%88/">综合</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/diary">小扎</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/about">关于</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/cz.github.io/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search" title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+
+<style>
+  .navbar-toggle path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    --length: 24;
+    --offset: -38;
+    stroke-dasharray: var(--length) var(--total-length);
+    stroke-dashoffset: var(--offset);
+    transition: all .8s cubic-bezier(.645, .045, .355, 1);
+  }
+</style>
+      </aside>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/cz.github.io/">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/cz.github.io/">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+
+      
+<script src="/cz.github.io/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/cz.github.io/js/lazyload.min.js"></script>
+
+
+  
+<script src="/cz.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+  
+<script src="/cz.github.io/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/cz.github.io/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  
+  
+  </div>
+</body>
+
+</html>
