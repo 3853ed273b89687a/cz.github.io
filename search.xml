@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>docker/ssh</title>
-    <url>cz.github.io/2020/05/18/docker-ssh/</url>
+    <url>/cz.github.io/2020/05/18/docker-ssh/</url>
     <content><![CDATA[<h3 id="一、先安装docker"><a href="#一、先安装docker" class="headerlink" title="一、先安装docker"></a>一、先安装docker</h3><p>这个很简单，因为我的系统是win10，我安装的是Docker Desktop，最好是更改一下docker镜像</p>
 <h3 id="二、运行docker，并用docker安装centos系统"><a href="#二、运行docker，并用docker安装centos系统" class="headerlink" title="二、运行docker，并用docker安装centos系统"></a>二、运行docker，并用docker安装centos系统</h3><p>先看以下命令会不会报错</p>
 <pre><code>$ docker -v
@@ -69,7 +69,7 @@ docker push carl/lnmp:1.0</code></pre><p>等待推送完成后，在你的<a hre
   </entry>
   <entry>
     <title>使用vue+SheetJS/js-xlsx修改表头并导出excel</title>
-    <url>cz.github.io/2020/05/06/jsxlsx/</url>
+    <url>/cz.github.io/2020/05/06/jsxlsx/</url>
     <content><![CDATA[<p>先写个静态的数据试试</p>
 <pre><code>&lt;button @click=&quot;downloadMater&quot;&gt;导出excel&lt;/button&gt;</code></pre><pre><code>methods: {
     //创建表头
@@ -155,12 +155,12 @@ docker push carl/lnmp:1.0</code></pre><p>等待推送完成后，在你的<a hre
   </entry>
   <entry>
     <title>study</title>
-    <url>cz.github.io/2020/04/07/study/</url>
+    <url>/cz.github.io/2020/04/07/study/</url>
     <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>git对比工具破解方法</title>
-    <url>cz.github.io/2020/03/31/beyond_compare/</url>
+    <url>/cz.github.io/2020/03/31/beyond_compare/</url>
     <content><![CDATA[<p>在用git做项目管理的时候，时常会有冲突，这时候手动修改肯定会覆盖了其他小伙伴的代码。那么就需要使用到对比工具。</p>
 <p>Beyond Compare 4官方注册需要249。所以网上找个方法破解吧。</p>
 <h4 id="1、永久使用需删除目录下所有："><a href="#1、永久使用需删除目录下所有：" class="headerlink" title="1、永久使用需删除目录下所有："></a>1、永久使用需删除目录下所有：</h4><pre><code>C:\Users\***\AppData\Roaming\Scooter Software\Beyond Compare 4</code></pre><h4 id="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："><a href="#2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：" class="headerlink" title="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："></a>2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：</h4><pre><code>删除安装目录下的BCUnrar.dll，然后可以在 帮助-输入秘钥弹出秘钥框</code></pre><h4 id="3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法"><a href="#3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法" class="headerlink" title="3、如果Beyond Compare 4已经过期，无法打开的激活界面方法"></a>3、如果Beyond Compare 4已经过期，无法打开的激活界面方法</h4><pre><code>修改一下下边文件内容为空就可以打开了
@@ -179,12 +179,12 @@ OYpl7BatIcd6tsiwdhHKRnyGshyVEjSgRCRY11IgyvdRPnbW8UOVULuTE</code></pre>]]></conte
   </entry>
   <entry>
     <title>uniapp</title>
-    <url>cz.github.io/2020/01/07/uniapp/</url>
+    <url>/cz.github.io/2020/01/07/uniapp/</url>
     <content><![CDATA[<pre><code>TypeError: Cannot read property &#39;components&#39; of undefined</code></pre><pre><code>Failed to resolve async component: function (resolve)</code></pre>]]></content>
   </entry>
   <entry>
     <title>vi</title>
-    <url>cz.github.io/2020/01/02/vi/</url>
+    <url>/cz.github.io/2020/01/02/vi/</url>
     <content><![CDATA[<p><font color='red'>此文特编辑</font></p>
 <p>1.跳转到命令行行首:ctrl+a<br>2.跳转到命令行行尾:ctrl+e<br>3.删除行首到光标位置的字符:ctrl+u<br>4.删除光标位置到行尾的字符:ctrl+k<br>5.清理屏幕:ctrl+l或者clear命令</p>
 <p>生命在于折腾,VI还是要练练的.很早之前就学过VI了，这次重新练练。</p>
@@ -233,7 +233,7 @@ OYpl7BatIcd6tsiwdhHKRnyGshyVEjSgRCRY11IgyvdRPnbW8UOVULuTE</code></pre>]]></conte
   </entry>
   <entry>
     <title>别再百度行天下了,多用google吧</title>
-    <url>cz.github.io/2020/01/02/teasing/</url>
+    <url>/cz.github.io/2020/01/02/teasing/</url>
     <content><![CDATA[<p>做为一名程序猿,会经常搜索问题，我的博客是用 git 管理项目,webhook 拉取代码,使用了 cloudflare 的 ssl 和 cdn，开启了缓存，所以每次 git push 了代码后，需要点击 cloudflare 中的 Purge Cache 清除,然后就百度了一下这个问题。</p>
 <p>发现如下文章<a href="https://www.minwt.com/website/server/21289.html" target="_blank" rel="noopener">免登後台！手動快速清除 CloudFlare 的 Page Rules 頁面快取 https://www.minwt.com/website/server/21289.html</a>,按操作直接复制粘贴,放到 mac bash 下执行，提示</p>
 <pre><code>-bash: br: No such file or directory</code></pre><p>咦,提示没有这样的文件或目录,我 curl 没装?<br>查看一下 crul,执行</p>
@@ -249,7 +249,7 @@ OYpl7BatIcd6tsiwdhHKRnyGshyVEjSgRCRY11IgyvdRPnbW8UOVULuTE</code></pre>]]></conte
   </entry>
   <entry>
     <title>总结网上的前端面试题</title>
-    <url>cz.github.io/2019/12/27/web/interview/</url>
+    <url>/cz.github.io/2019/12/27/web/interview/</url>
     <content><![CDATA[<p>整理了网上的一些前端面试题,也算是为自己做一个笔记吧</p>
 <p> <font size=5>1. 什么是防抖和节流？有什么区别？如何实现？</font></p>
 <blockquote>
@@ -319,12 +319,12 @@ body{font-size: 1.4rem;} /* 1.4 × 10px = 14px */
   </entry>
   <entry>
     <title>用梯子,看一看世界</title>
-    <url>cz.github.io/2019/12/25/ssr/</url>
+    <url>/cz.github.io/2019/12/25/ssr/</url>
     <content><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3>]]></content>
   </entry>
   <entry>
     <title>MAC系统工具推荐</title>
-    <url>cz.github.io/2019/12/25/mac_tool/</url>
+    <url>/cz.github.io/2019/12/25/mac_tool/</url>
     <content><![CDATA[<h3 id="MAC工具下载站推荐"><a href="#MAC工具下载站推荐" class="headerlink" title="MAC工具下载站推荐"></a>MAC工具下载站推荐</h3><p><a href="http://www.xclient.info/" target="_blank" rel="noopener">xclient http://www.xclient.info/</a></p>
 <h3 id="前端工具"><a href="#前端工具" class="headerlink" title="前端工具"></a>前端工具</h3><ul>
 <li>webstorm</li>
@@ -374,16 +374,16 @@ body{font-size: 1.4rem;} /* 1.4 × 10px = 14px */
 </ol>
 ]]></content>
       <tags>
+        <tag>后端</tag>
         <tag>系统工具推荐</tag>
         <tag>前端后端必备</tag>
         <tag>全栈工具</tag>
         <tag>前端</tag>
-        <tag>后端</tag>
       </tags>
   </entry>
   <entry>
     <title>让你的项目自动化部署到服务器</title>
-    <url>cz.github.io/2019/12/25/webhook/</url>
+    <url>/cz.github.io/2019/12/25/webhook/</url>
     <content><![CDATA[<p>通俗点讲,就是在本地开发完成,然后 git push 到 gitlab 上,然后自动更新到服务器,无需手动进入服务器手动 git pull</p>
 <p>简单点讲,就是 git push 后，有个钩子( <a href="http://www.a.com/update.php类似这样的网址" target="_blank" rel="noopener">http://www.a.com/update.php类似这样的网址</a> )请求一下,update.php 代码中会执行相关命令,代替手动 git pull</p>
 <blockquote>
@@ -591,7 +591,7 @@ NULL</code></pre><h3 id="第十一步-开启exec"><a href="#第十一步-开启e
   </entry>
   <entry>
     <title>Mac默认python切换升级为python3</title>
-    <url>cz.github.io/2019/12/24/python/</url>
+    <url>/cz.github.io/2019/12/24/python/</url>
     <content><![CDATA[<h3 id="先查看系统环境和python环境"><a href="#先查看系统环境和python环境" class="headerlink" title="先查看系统环境和python环境"></a>先查看系统环境和python环境</h3><p>我的电脑为环境为mac OS High Sierra 10.13.6</p>
 <h3 id="第一步-在终端输入命令查看python"><a href="#第一步-在终端输入命令查看python" class="headerlink" title="第一步: 在终端输入命令查看python"></a><strong>第一步:</strong> 在终端输入命令查看python</h3><pre><code>    python -V</code></pre><p>显示如下:</p>
 <blockquote>
@@ -613,10 +613,10 @@ alias python=python3</code></pre><h3 id="第五步-让配置文件生效"><a hre
         <category>python</category>
       </categories>
       <tags>
-        <tag>后端</tag>
         <tag>python</tag>
         <tag>python升级</tag>
         <tag>python3</tag>
+        <tag>后端</tag>
       </tags>
   </entry>
 </search>
