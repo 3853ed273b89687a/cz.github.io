@@ -1,622 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>docker/ssh</title>
-    <url>cz.github.io/2020/05/18/docker-ssh/</url>
-    <content><![CDATA[<h3 id="一、先安装docker"><a href="#一、先安装docker" class="headerlink" title="一、先安装docker"></a>一、先安装docker</h3><p>这个很简单，因为我的系统是win10，我安装的是Docker Desktop，最好是更改一下docker镜像</p>
-<h3 id="二、运行docker，并用docker安装centos系统"><a href="#二、运行docker，并用docker安装centos系统" class="headerlink" title="二、运行docker，并用docker安装centos系统"></a>二、运行docker，并用docker安装centos系统</h3><p>先看以下命令会不会报错</p>
-<pre><code>$ docker -v
-Docker version 19.03.8, build afacb8b
-$ docker-compose -v
-docker-compose version 1.25.4, build 8d51620a</code></pre><pre><code>docker pull centos   &lt;----执行这行，拉取镜像
-
-Using default tag: latest
-latest: Pulling from library/centos
-8a29a15cefae: Already exists
-Digest: sha256:fe8d824220415eed5477b63addf40fb06c3b049404242b31982106ac204f6700
-Status: Downloaded newer image for centos:latest
-docker.io/library/centos:late
-
-
-docker images      &lt;----执行这行,查看本地镜像
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-hell178/lnmp        v1                  620a78c49b09        5 days ago          4GB
-centos              latest              470671670cac        4 months ago        237MB</code></pre><h3 id="三、进入容器并安装lnmp"><a href="#三、进入容器并安装lnmp" class="headerlink" title="三、进入容器并安装lnmp"></a>三、进入容器并安装lnmp</h3><p>执行命令,这里用了-v，是目录映射，用做mysql数据存储目录，如果你不是用的Lnmp一键环境包，那么需要注意mysql安装目录</p>
-<pre><code>docker run -it -v D:\docker\mysql:/usr/local/mysql/var centos</code></pre><p>使用git Bash进入容器，可能会报以下错误。</p>
-<pre><code>docker run -it centos
-the input device is not a TTY.  If you are using mintty, try prefixing the command with &#39;winpty&#39;</code></pre><p>建议使用windows PowerShell工具执行<br>1、在桌面上，按住shift不放，单击鼠标右键即可看到<br>2、按键盘上的win+x也有</p>
-<h3 id="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"><a href="#四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境" class="headerlink" title="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"></a>四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境</h3><p>先安装wget</p>
-<pre><code>yum -y install wget</code></pre><p>然后进到Lnmp官网，获取下载地址</p>
-<pre><code>lnmp官网地址 https://lnmp.org/install.html</code></pre><p>执行以下命令，按自己的喜好安装版本吧</p>
-<pre><code>wget http://soft.vpser.net/lnmp/lnmp1.6.tar.gz -cO lnmp1.6.tar.gz &amp;&amp; tar zxf lnmp1.6.tar.gz &amp;&amp; cd lnmp1.6 &amp;&amp; ./install.sh lnmp</code></pre><h3 id="五、安装ssh并使用密钥登录"><a href="#五、安装ssh并使用密钥登录" class="headerlink" title="五、安装ssh并使用密钥登录"></a>五、安装ssh并使用密钥登录</h3><p>安装openssh</p>
-<pre><code>yum install openssh-server openssh-clients -y</code></pre><p>修改/etc/ssh/sshd_config配置文件</p>
-<pre><code>vi /etc/ssh/sshd_config</code></pre><p>确定以下3个都没有被注释</p>
-<pre><code>HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_ecdsa_key
-HostKey /etc/ssh/ssh_host_ed25519_key</code></pre><p>注意：某些资料中让把配置文件中的UsePAM yes改为UsePAM no，经过实际测试，修改后启动ssh服务将报错,其实这个不用注释也行的</p>
-<p>执行以下3条命令,生成对应的密钥,出现需要输入密码的地方，一路回车</p>
-<pre><code>ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-ssh-keygen -t rsa -f /etc/ssh/ssh_host_ecdsa_key
-ssh-keygen -t rsa -f /etc/ssh/ssh_host_ed25519_key</code></pre><p>修改root密码</p>
-<pre><code>passwd</code></pre><p>启动ssh服务</p>
-<pre><code>/usr/sbin/sshd -D &amp;</code></pre><h3 id="六、构建镜像并上传"><a href="#六、构建镜像并上传" class="headerlink" title="六、构建镜像并上传"></a>六、构建镜像并上传</h3><p>lnmp安装好后，另外再开一个终端窗口。执行以下docker操作。千万别动刚才安装lnmp的窗口，否则刚才安装的东西全都没有了。</p>
-<pre><code>docker ps
-docker commit a0f2b58c74af lnmp
-docker tag lnmp:latest carl/lnmp:1.0
-docker push carl/lnmp:1.0</code></pre><p>等待推送完成后，在你的<a href="https://hub.docker.com/repositories即可看到了。" target="_blank" rel="noopener">https://hub.docker.com/repositories即可看到了。</a></p>
-<h3 id="八、编写docker-compose-yml"><a href="#八、编写docker-compose-yml" class="headerlink" title="八、编写docker-compose.yml"></a>八、编写docker-compose.yml</h3><ul>
-<li>注意点<pre><code>一般mysql数据存储到宿主机，而不是docker容器中，所有
-
-</code></pre></li>
-</ul>
-<p>以下为官网说明:<a href="https://lnmp.org/faq.html" target="_blank" rel="noopener">https://lnmp.org/faq.html</a><br>MySQL目录的更改，首先需要停掉mysql服务器/etc/init.d/mysql stop，下面新目录以/data/mysql/ 为例，然后cp -a /usr/local/mysql/var/* /data/mysql/，再chown mysql:mysql -R /data/mysql/ 下面再修改/etc/my.cnf ，查找[mysqld] ，在下面加入datadir = /data/mysql/ 保存，如果开启了innodb还需要修改innodb_data_home_dir 和innodb_log_group_home_dir为新的/data/mysql，启动mysql。</p>
-<pre><code></code></pre><h1 id="这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x"><a href="#这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x" class="headerlink" title="这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x"></a>这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x</h1><h1 id="使用docker-compose-v查看版本号-如果是1-xx，version就填2"><a href="#使用docker-compose-v查看版本号-如果是1-xx，version就填2" class="headerlink" title="使用docker-compose -v查看版本号,如果是1.xx，version就填2"></a>使用docker-compose -v查看版本号,如果是1.xx，version就填2</h1><p>version: ‘2’<br>services:<br>#服务名称，用户自定义<br>    lnmp:<br>#镜像名称/镜像ID，如果本地不存在compose会拉取镜像，填刚才构建的镜像名<br>        image: carl/lnmp:v1<br>#容器名称<br>#container_name: lnmp<br>#设置镜像变量，启动后的容器会包含这些变量设置<br>        environment:<br>            TZ: Asia/Shanghai<br>        volumes:<br>            - D:\works:/home/wwwroot<br>            - D:\docker\vhost:/usr/local/nginx/conf/vhost<br>#这里把Mysql数据存储目录映射到宿主机,在第三步有临时映射<br>            - D:\docker\mysql:/usr/local/mysql/var<br>        ports:<br>            - “80:80”<br>            - “81:81”<br>            - “82:82”<br>            - “10022:22”<br>            - “8090:8090”<br>            - “800:8080”<br>            - “10000:10000”<br>            - “443:443”<br>        command:<br>            - /bin/bash<br>            - -c<br>            - |<br>                lnmp start &amp;&amp; /usr/sbin/sshd -D &amp;<br>        tty: true</p>
-<pre><code>执行命令开始使用</code></pre><p>docker-compose exec lnmp /bin/bash</p>
-<pre><code>
-### 八、下次使用
-把网站内容映射到了linux容器中的/home/wwwroot中，vhost也映射了
-下次电脑重启了，有2种方式打开继续使用
-1、在docker-composer.yml执行命令</code></pre><p>docker-compose exec lnmp /bin/bash</p>
-<pre><code>2、docker desktop桌面工具，点击setting-&gt;右上角关闭-&gt;这里有容器列表
-
-
-### 其他可能注意的点
-1、如果Mysql没有启动，执行以下命令</code></pre><p>yum install initscripts -y</p>
-<pre><code>
-2、如果navicat mysql连接不上数据库，请参考</code></pre><p><a href="https://blog.csdn.net/me_Lany/article/details/82770948" target="_blank" rel="noopener">https://blog.csdn.net/me_Lany/article/details/82770948</a></p>
-<pre><code>
-参考站点：[https://www.jianshu.com/p/34a625621a9a](https://www.jianshu.com/p/34a625621a9a)</code></pre>]]></content>
-  </entry>
-  <entry>
-    <title>使用vue+SheetJS/js-xlsx修改表头并导出excel</title>
-    <url>cz.github.io/2020/05/06/jsxlsx/</url>
-    <content><![CDATA[<p>先写个静态的数据试试</p>
-<pre><code>&lt;button @click=&quot;downloadMater&quot;&gt;导出excel&lt;/button&gt;</code></pre><pre><code>methods: {
-    //创建表头
-    createWs(data, titles) {
-        const ws = XLSX.utils.json_to_sheet(
-            data,
-            {
-                header: Object.keys(titles)
-            }
-        )
-        const range = XLSX.utils.decode_range(ws[&#39;!ref&#39;])
-
-        for (let c = range.s.c; c &lt;= range.e.c; c++) {
-            const header = XLSX.utils.encode_col(c) + &#39;1&#39;
-            ws[header].v = titles[ws[header].v]
-        }
-
-        return ws
-    },
-     //导出excel
-    downloadMater() {
-
-        const titles = {
-            name: &#39;姓名&#39;,
-            age: &#39;年龄&#39;
-        }
-        const data = [
-            {
-                name: &#39;jzx&#39;,
-                age: 17
-            },
-            {
-                name: &#39;wmp&#39;,
-                age: 17
-            }
-        ]
-        const ws = this.createWs(
-            data,
-            titles
-        )
-
-        let wopts = {
-            bookType: &#39;xlsx&#39;,
-            bookSST: true,
-            type: &#39;binary&#39;
-        };
-        let workBook = {
-            SheetNames: [&#39;Sheet1&#39;],
-            Sheets: {
-                &#39;Sheet1&#39;: ws
-            },
-            Props: {}
-        };
-
-        FileSaver.saveAs(new Blob([this.changeData(XLSX.write(workBook, wopts))], {type: &#39;application/octet-stream&#39;}), &quot;lists.xlsx&quot;)
-    },
-    // 字符串转字符流
-    changeData(s) {
-        let buf
-        //如果存在ArrayBuffer对象(es6) 最好采用该对象
-        if (typeof ArrayBuffer !== &#39;undefined&#39;) {
-
-            //1、创建一个字节长度为s.length的内存区域
-            buf = new ArrayBuffer(s.length);
-
-            //2、创建一个指向buf的Unit8视图，开始于字节0，直到缓冲区的末尾
-            let view = new Uint8Array(buf);
-
-            //3、返回指定位置的字符的Unicode编码
-            for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) &amp; 0xFF;
-            return buf;
-
-        } else {
-            buf = new Array(s.length);
-            for (let i = 0; i != s.length; ++i) buf[i] = s.charCodeAt(i) &amp; 0xFF;
-            return buf;
-        }
-    }
-}</code></pre><p>这样就自定义了表头。</p>
-<p>再把从api请求到的数据放入，用titles做个对应即可。</p>
-<p>参考网站：<a href="https://blog.csdn.net/juzipidemimi/article/details/90815730" target="_blank" rel="noopener">https://blog.csdn.net/juzipidemimi/article/details/90815730</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>study</title>
-    <url>cz.github.io/2020/04/07/study/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>git对比工具破解方法</title>
-    <url>cz.github.io/2020/03/31/beyond_compare/</url>
-    <content><![CDATA[<p>在用git做项目管理的时候，时常会有冲突，这时候手动修改肯定会覆盖了其他小伙伴的代码。那么就需要使用到对比工具。</p>
-<p>Beyond Compare 4官方注册需要249。所以网上找个方法破解吧。</p>
-<h4 id="1、永久使用需删除目录下所有："><a href="#1、永久使用需删除目录下所有：" class="headerlink" title="1、永久使用需删除目录下所有："></a>1、永久使用需删除目录下所有：</h4><pre><code>C:\Users\***\AppData\Roaming\Scooter Software\Beyond Compare 4</code></pre><h4 id="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："><a href="#2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：" class="headerlink" title="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："></a>2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：</h4><pre><code>删除安装目录下的BCUnrar.dll，然后可以在 帮助-输入秘钥弹出秘钥框</code></pre><h4 id="3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法"><a href="#3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法" class="headerlink" title="3、如果Beyond Compare 4已经过期，无法打开的激活界面方法"></a>3、如果Beyond Compare 4已经过期，无法打开的激活界面方法</h4><pre><code>修改一下下边文件内容为空就可以打开了
-C:\Users\用户\AppData\Roaming\BeyondCompare\BeyondCompare419.ini</code></pre><h4 id="4、密钥，如果密钥无法使用，可以再在网上搜搜"><a href="#4、密钥，如果密钥无法使用，可以再在网上搜搜" class="headerlink" title="4、密钥，如果密钥无法使用，可以再在网上搜搜"></a>4、密钥，如果密钥无法使用，可以再在网上搜搜</h4><pre><code>w4G-in5u3SH75RoB3VZIX8htiZgw4ELilwvPcHAIQWfwfXv5n0IHDp5hv
-1BM3+H1XygMtiE0-JBgacjE9tz33sIh542EmsGs1yg638UxVfmWqNLqu-
-Zw91XxNEiZF7DC7-iV1XbSfsgxI8Tvqr-ZMTxlGCJU+2YLveAc-YXs8ci
-RTtssts7leEbJ979H5v+G0sw-FwP9bjvE4GCJ8oj+jtlp7wFmpVdzovEh
-v5Vg3dMqhqTiQHKfmHjYbb0o5OUxq0jOWxg5NKim9dhCVF+avO6mDeRNc
-OYpl7BatIcd6tsiwdhHKRnyGshyVEjSgRCRY11IgyvdRPnbW8UOVULuTE</code></pre>]]></content>
-      <tags>
-        <tag>综合</tag>
-        <tag>合并工具</tag>
-        <tag>Beyond Compare破解</tag>
-        <tag>git合并工具</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>uniapp</title>
-    <url>cz.github.io/2020/01/07/uniapp/</url>
-    <content><![CDATA[<pre><code>TypeError: Cannot read property &#39;components&#39; of undefined</code></pre><pre><code>Failed to resolve async component: function (resolve)</code></pre>]]></content>
-  </entry>
-  <entry>
-    <title>vi</title>
-    <url>cz.github.io/2020/01/02/vi/</url>
-    <content><![CDATA[<p><font color='red'>此文特编辑</font></p>
-<p>1.跳转到命令行行首:ctrl+a<br>2.跳转到命令行行尾:ctrl+e<br>3.删除行首到光标位置的字符:ctrl+u<br>4.删除光标位置到行尾的字符:ctrl+k<br>5.清理屏幕:ctrl+l或者clear命令</p>
-<p>生命在于折腾,VI还是要练练的.很早之前就学过VI了，这次重新练练。</p>
-<h3 id="1-文件操作"><a href="#1-文件操作" class="headerlink" title="1. 文件操作"></a>1. 文件操作</h3><p>vi FileName 打开文件 FileName,并将光标置于第一行首。</p>
-<p>vi +n FileName 打开文件 FileName,并将光标置于第 n 行首。</p>
-<p>vi + FileName 打开文件 FileName,并将光标置于最后一行。</p>
-<p>vi + /pattern File 打开文件 File,并将光标置于其中第一个于 pattern 匹配的字符串处。</p>
-<p>vi –r FileName 在上次正用 vi 编辑 FileName 发生系统崩溃后,恢复FileName。</p>
-<h3 id="2-插入"><a href="#2-插入" class="headerlink" title="2. 插入"></a>2. 插入</h3><p>i 在光标前插入。</p>
-<p>a 在光标后插入。</p>
-<p>I 在当前行首插入。</p>
-<p>A 在当前行尾插入。</p>
-<p>o 在当前行之下一新行插入。</p>
-<p>O 在当前行之上新开一行插入。</p>
-<h3 id="3-光标的移动"><a href="#3-光标的移动" class="headerlink" title="3. 光标的移动"></a>3. 光标的移动</h3><p>1G 光标移动到文件第一行的行首。</p>
-<p>K 光标移动到文件上一行的同一列。</p>
-<p>h 光标移动到当前行的前一个字符。</p>
-<p>l 光标移动到当前行的后一个字符</p>
-<p>j 光标移动到下一行的同一列。</p>
-<p>G 光标移动到文件最后一行的行首。</p>
-<h3 id="4-整行的删除、移动"><a href="#4-整行的删除、移动" class="headerlink" title="4. 整行的删除、移动"></a>4. 整行的删除、移动</h3><p>dd 删除光标所在行</p>
-<p>yy 复制光标所在行</p>
-<p>p(小写)  在光标的下一行粘贴yy命令复制的行</p>
-<p>P(大写)  在光标的上一行粘贴yy命令复制的行</p>
-<p>J 对光标所在行和光标所在下一行进行合并成一行。</p>
-<h3 id="5-删除单个字符、删除一个单词"><a href="#5-删除单个字符、删除一个单词" class="headerlink" title="5. 删除单个字符、删除一个单词"></a>5. 删除单个字符、删除一个单词</h3><p>X(大写) 删除光标前一个字符</p>
-<p>X(小写）删除光标后一个字符</p>
-<p>xx   删除单个字符</p>
-<p>dw  删除一个单词</p>
-<h3 id="6-查找替换"><a href="#6-查找替换" class="headerlink" title="6. 查找替换"></a>6. 查找替换</h3><p>/ 在文件中查找输入的内容</p>
-<p>n 进入查询结果的下个内容（由光标所在行进行往上查询）</p>
-<p>N 进入查询结果的下个内容（由光标所在行进行往下查询）</p>
-<h3 id="7-回退操作"><a href="#7-回退操作" class="headerlink" title="7. 回退操作"></a>7. 回退操作</h3><p>u   回退之前的操作</p>
-<p>:e! 重新编辑当前文件,忽略所有的修改</p>
-<h3 id="8-文件保存"><a href="#8-文件保存" class="headerlink" title="8. 文件保存"></a>8. 文件保存</h3><p>ZZ 保存后退出文件</p>
-<p>:w保存并返回指令模式</p>
-<p>:w!覆盖已存在的文件</p>
-<p>:q退出</p>
-<p>:q!退出并丢掉所有未保存信息</p>
-<p>:wq!保存并退出</p>
-]]></content>
-      <tags>
-        <tag>vi</tag>
-        <tag>vim</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>别再百度行天下了,多用google吧</title>
-    <url>cz.github.io/2020/01/02/teasing/</url>
-    <content><![CDATA[<p>做为一名程序猿,会经常搜索问题，我的博客是用 git 管理项目,webhook 拉取代码,使用了 cloudflare 的 ssl 和 cdn，开启了缓存，所以每次 git push 了代码后，需要点击 cloudflare 中的 Purge Cache 清除,然后就百度了一下这个问题。</p>
-<p>发现如下文章<a href="https://www.minwt.com/website/server/21289.html" target="_blank" rel="noopener">免登後台！手動快速清除 CloudFlare 的 Page Rules 頁面快取 https://www.minwt.com/website/server/21289.html</a>,按操作直接复制粘贴,放到 mac bash 下执行，提示</p>
-<pre><code>-bash: br: No such file or directory</code></pre><p>咦,提示没有这样的文件或目录,我 curl 没装?<br>查看一下 crul,执行</p>
-<pre><code>curl --version</code></pre><p>发现有啊，然后果断去 cloudflare 官网看 api,发现百度到的文章多了几个 br</p>
-<pre><code>&lt;/br&gt;</code></pre><p>小坑了一把，然后放到自己的 webhook 中,完工</p>
-<blockquote>
-<p>curl -X DELETE “<a href="https://api.cloudflare.com/client/v4/zones/" target="_blank" rel="noopener">https://api.cloudflare.com/client/v4/zones/</a><font color="red">ZoneID</font>/purge_cache” <br> -H “X-Auth-Email: <font color="red">Email</font>“ <br> -H “X-Auth-Key: <font color="red">Global API Key</font>“ <br> -H “Content-Type: application/json” <br> –data ‘{“purge_everything”:true}’</p>
-</blockquote>
-<p>提示清除成功</p>
-<pre><code>{&quot;result&quot;:{&quot;id&quot;:&quot;c14fc1a5df8629ba7e1c7d153836b9ad&quot;},&quot;success&quot;:true,&quot;errors&quot;:[],&quot;messages&quot;:[]}</code></pre><p>最后吐槽一下，很多文章都是复制粘贴,格式错乱,严重影响阅读体验,很多时候,30%的精力浪费在填坑中,来自自己挖的坑,网上复制粘贴的坑,希望多点原创,少点ctrl+c。<br>答应我,别再百度行天下了.</p>
-<p><a href="https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns" target="_blank" rel="noopener">cloudflare 官方 api https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>总结网上的前端面试题</title>
-    <url>cz.github.io/2019/12/27/web/interview/</url>
-    <content><![CDATA[<p>整理了网上的一些前端面试题,也算是为自己做一个笔记吧</p>
-<p> <font size=5>1. 什么是防抖和节流？有什么区别？如何实现？</font></p>
-<blockquote>
-<p>1.1 防抖</p>
-<p>触发高频事件后 n 秒内函数只会执行一次，如果 n 秒内高频事件再次被触发，则重新计算时间；</p>
-<p>1.2 节流</p>
-<p>高频事件触发，但在 n 秒内只会执行一次，所以节流会稀释函数的执行频率。</p>
-<p>每次触发事件时都判断当前是否有等待执行的延时函数。</p>
-</blockquote>
-<h3 id="html-amp-css"><a href="#html-amp-css" class="headerlink" title="html&amp; css"></a>html&amp; css</h3><p><font size=5>1.  简述一下src与href的区别</font></p>
-<blockquote>
-<p>href是指向网络资源所在位置，建立和当前元素（锚点）或当前文档（链接）之间的链接，用于超链接。<br>src是指向外部资源的位置，指向的内容将会嵌入到文档中当前标签所在位置；在请求src资源时会将其指向的资源下载并应用到文档内，例如js脚本，img图片和frame等元素。<br>当浏览器解析到该元素时，会暂停其他资源的下载和处理，直到将该资源加载、编译、执行完毕，图片和框架等元素也如此，类似于将所指向资源嵌入当前标签内。这也是为什么将js脚本放在底部而不是头部。</p>
-</blockquote>
-<p><font size=5>2.  Css单位px，rem，em，vw，vh的区别</font></p>
-<p>px</p>
-<blockquote>
-<p>px就是pixel像素的缩写，相对长度单位，网页设计常用的基本单位。像素px是相对于显示器屏幕分辨率而言的</p>
-</blockquote>
-<p>em</p>
-<blockquote>
-<p>em是相对长度单位。相对于当前对象内文本的字体尺寸（参考物是父元素的font-size）<br>如当前父元素的字体尺寸未设置，则相对于浏览器的默认字体尺寸<br>特点：<br>　　1. em的值并不是固定的；<br>　　2. em会继承父级元素的字体大小</p>
-</blockquote>
-<p>rem</p>
-<blockquote>
-<p>rem是CSS3新增的一个相对单位，rem是相对于HTML根元素的字体大小（font-size）来计算的长度单位<br>如果你没有设置html的字体大小，就会以浏览器默认字体大小，一般是16px</p>
-</blockquote>
-<pre><code>html{font-size: 62.5%}  /* 10 ÷ 16 × 100% = 62.5% */
-
-body{font-size: 1.4rem;} /* 1.4 × 10px = 14px */
-
-/*在根元素中定义了一个基本字体大小为62.5%（也就是10px。设置这个值主要方便计算，如果没有设置，将是以“16px”为基准 ）*/</code></pre><blockquote>
-<p>优点是，只需要设置根目录的大小就可以把整个页面的成比例的调好<br>rem兼容性：除了IE8及更早版本外，所有浏览器均已支持rem<br>em与rem的区别：<br>　　rem是相对于根元素（html）的字体大小，而em是相对于其父元素的字体大小<br>两者使用规则：<br>如果这个属性根据它的font-size进行测量，则使用em<br>其他的一切事物属性均使用rem<br>这里提供了一个px、em、rem单位的转换工具：<a href="http://pxtoem.com/" target="_blank" rel="noopener">http://pxtoem.com/</a></p>
-</blockquote>
-<p>vw、vh</p>
-<blockquote>
-<p>vw、vh、vmax、vmin这四个单位都是基于视口<br>vw是相对视口（viewport）的宽度而定的，长度等于视口宽度的1/100<br>假如浏览器的宽度为200px，那么1vw就等于2px（200px/100）<br>vh是相对视口（viewport）的高度而定的，长度等于视口高度的1/100<br>假如浏览器的高度为500px，那么1vh就等于5px（500px/100）<br>vmin和vmax是相对于视口的高度和宽度两者之间的最小值或最大值</p>
-</blockquote>
-<pre><code>/*
-如果浏览器的高为300px、宽为500px，那么1vmin就是3px，1vmax就是5px；如果浏览器的高为800px，宽为1080px，那么1vmin也是8px，1vmax也是10.8px
-*/</code></pre><p>其他单位：</p>
-<blockquote>
-<p>%（百分比）<br>一般来说就是相对于父元素<br>1、对于普通定位元素就是我们理解的父元素<br>2、对于position: absolute;的元素是相对于已定位的父元素<br>3、对于position: fixed;的元素是相对于ViewPort（可视窗口）</p>
-</blockquote>
-<p>vm</p>
-<blockquote>
-<p>css3新单位，相对于视口的宽度或高度中较小的那个<br>其中最小的那个被均分为100单位的vm<br>比如：浏览器高度900px，宽度1200px，取最小的浏览器高度，1 vm = 900px/100 = 9 px<br>缺点：兼容性差</p>
-</blockquote>
-<h3 id="JS"><a href="#JS" class="headerlink" title="JS"></a>JS</h3><ol>
-<li>(0.1 + 0.2) 等于多少 为什么?<blockquote>
-<p>0.30000000000000004<br>因为 JS 采用 IEEE 754 双精度版本（64位），并且只要采用 IEEE 754 的语言都有该问题。我们都知道计算机表示十进制是采用二进制表示的，所以 0.1 在二进制表示为</p>
-</blockquote>
-</li>
-</ol>
-<pre><code>0.1 = 2^-4 * 1.10011(0011) // (0011) 表示循环</code></pre><p>小数算二进制和整数不同。乘法计算时，只计算小数位，整数位用作每一位的二进制，并且得到的第一位为最高位。所以我们得出 0.1 = 2^-4 * 1.10011(0011)，那么 0.2 的演算也基本如上所示，只需要去掉第一步乘法，所以得出 0.2 = 2^-3 * 1.10011(0011)。</p>
-<p>回来继续说 IEEE 754 双精度。六十四位中符号位占一位，整数位占十一位，其余五十二位都为小数位。因为 0.1 和 0.2 都是无限循环的二进制了，所以在小数位末尾处需要判断是否进位（就和十进制的四舍五入一样）。</p>
-<p>所以 2^-4 * 1.10011…001 进位后就变成了 2^-4 * 1.10011(0011 * 12次)010 。那么把这两个二进制加起来会得出 2^-2 * 1.0011(0011 * 11次)0100 , 这个值算成十进制就是 0.30000000000000004</p>
-<p>下面说一下原生解决办法，如下代码所示</p>
-<h3 id="前端框架"><a href="#前端框架" class="headerlink" title="前端框架"></a>前端框架</h3><h4 id="VUE"><a href="#VUE" class="headerlink" title="VUE"></a>VUE</h4><h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://yq.aliyun.com/articles/613474" target="_blank" rel="noopener">几道高级前端面试题解析 https://yq.aliyun.com/articles/613474</a></p>
-]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>docker/ssh</title>
+      <link href="cz.github.io/2020/05/18/docker-ssh/"/>
+      <url>cz.github.io/2020/05/18/docker-ssh/</url>
+      
+        <content type="html"><![CDATA[<h3 id="一、先安装docker"><a href="#一、先安装docker" class="headerlink" title="一、先安装docker"></a>一、先安装docker</h3><p>这个很简单，因为我的系统是win10，我安装的是Docker Desktop，最好是更改一下docker镜像</p><h3 id="二、运行docker，并用docker安装centos系统"><a href="#二、运行docker，并用docker安装centos系统" class="headerlink" title="二、运行docker，并用docker安装centos系统"></a>二、运行docker，并用docker安装centos系统</h3><p>先看以下命令会不会报错</p><pre><code>$ docker -vDocker version 19.03.8, build afacb8b$ docker-compose -vdocker-compose version 1.25.4, build 8d51620a</code></pre><pre><code>docker pull centos   &lt;----执行这行，拉取镜像Using default tag: latestlatest: Pulling from library/centos8a29a15cefae: Already existsDigest: sha256:fe8d824220415eed5477b63addf40fb06c3b049404242b31982106ac204f6700Status: Downloaded newer image for centos:latestdocker.io/library/centos:latedocker images      &lt;----执行这行,查看本地镜像REPOSITORY          TAG                 IMAGE ID            CREATED             SIZEhell178/lnmp        v1                  620a78c49b09        5 days ago          4GBcentos              latest              470671670cac        4 months ago        237MB</code></pre><h3 id="三、进入容器并安装lnmp"><a href="#三、进入容器并安装lnmp" class="headerlink" title="三、进入容器并安装lnmp"></a>三、进入容器并安装lnmp</h3><p>执行命令,这里用了-v，是目录映射，用做mysql数据存储目录，如果你不是用的Lnmp一键环境包，那么需要注意mysql安装目录</p><pre><code>docker run -it -v D:\docker\mysql:/usr/local/mysql/var centos</code></pre><p>使用git Bash进入容器，可能会报以下错误。</p><pre><code>docker run -it centosthe input device is not a TTY.  If you are using mintty, try prefixing the command with &#39;winpty&#39;</code></pre><p>建议使用windows PowerShell工具执行<br>1、在桌面上，按住shift不放，单击鼠标右键即可看到<br>2、按键盘上的win+x也有</p><h3 id="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"><a href="#四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境" class="headerlink" title="四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境"></a>四、因为是在本地运行，懒得一个个装nginx，mysql等，我这里直接用的是lnmp一键环境</h3><p>先安装wget</p><pre><code>yum -y install wget</code></pre><p>然后进到Lnmp官网，获取下载地址</p><pre><code>lnmp官网地址 https://lnmp.org/install.html</code></pre><p>执行以下命令，按自己的喜好安装版本吧</p><pre><code>wget http://soft.vpser.net/lnmp/lnmp1.6.tar.gz -cO lnmp1.6.tar.gz &amp;&amp; tar zxf lnmp1.6.tar.gz &amp;&amp; cd lnmp1.6 &amp;&amp; ./install.sh lnmp</code></pre><h3 id="五、安装ssh并使用密钥登录"><a href="#五、安装ssh并使用密钥登录" class="headerlink" title="五、安装ssh并使用密钥登录"></a>五、安装ssh并使用密钥登录</h3><p>安装openssh</p><pre><code>yum install openssh-server openssh-clients -y</code></pre><p>修改/etc/ssh/sshd_config配置文件</p><pre><code>vi /etc/ssh/sshd_config</code></pre><p>确定以下3个都没有被注释</p><pre><code>HostKey /etc/ssh/ssh_host_rsa_keyHostKey /etc/ssh/ssh_host_ecdsa_keyHostKey /etc/ssh/ssh_host_ed25519_key</code></pre><p>注意：某些资料中让把配置文件中的UsePAM yes改为UsePAM no，经过实际测试，修改后启动ssh服务将报错,其实这个不用注释也行的</p><p>执行以下3条命令,生成对应的密钥,出现需要输入密码的地方，一路回车</p><pre><code>ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_keyssh-keygen -t rsa -f /etc/ssh/ssh_host_ecdsa_keyssh-keygen -t rsa -f /etc/ssh/ssh_host_ed25519_key</code></pre><p>修改root密码</p><pre><code>passwd</code></pre><p>启动ssh服务</p><pre><code>/usr/sbin/sshd -D &amp;</code></pre><h3 id="六、构建镜像并上传"><a href="#六、构建镜像并上传" class="headerlink" title="六、构建镜像并上传"></a>六、构建镜像并上传</h3><p>lnmp安装好后，另外再开一个终端窗口。执行以下docker操作。千万别动刚才安装lnmp的窗口，否则刚才安装的东西全都没有了。</p><pre><code>docker psdocker commit a0f2b58c74af lnmpdocker tag lnmp:latest carl/lnmp:1.0docker push carl/lnmp:1.0</code></pre><p>等待推送完成后，在你的<a href="https://hub.docker.com/repositories即可看到了。" target="_blank" rel="noopener">https://hub.docker.com/repositories即可看到了。</a></p><h3 id="八、编写docker-compose-yml"><a href="#八、编写docker-compose-yml" class="headerlink" title="八、编写docker-compose.yml"></a>八、编写docker-compose.yml</h3><ul><li>注意点<pre><code>一般mysql数据存储到宿主机，而不是docker容器中，所有</code></pre></li></ul><p>以下为官网说明:<a href="https://lnmp.org/faq.html" target="_blank" rel="noopener">https://lnmp.org/faq.html</a><br>MySQL目录的更改，首先需要停掉mysql服务器/etc/init.d/mysql stop，下面新目录以/data/mysql/ 为例，然后cp -a /usr/local/mysql/var/* /data/mysql/，再chown mysql:mysql -R /data/mysql/ 下面再修改/etc/my.cnf ，查找[mysqld] ，在下面加入datadir = /data/mysql/ 保存，如果开启了innodb还需要修改innodb_data_home_dir 和innodb_log_group_home_dir为新的/data/mysql，启动mysql。</p><pre><code></code></pre><h1 id="这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x"><a href="#这里的version需要注意-Compose-文件格式有3个版本-分别为1-2-x-和-3-x" class="headerlink" title="这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x"></a>这里的version需要注意,Compose 文件格式有3个版本,分别为1, 2.x 和 3.x</h1><h1 id="使用docker-compose-v查看版本号-如果是1-xx，version就填2"><a href="#使用docker-compose-v查看版本号-如果是1-xx，version就填2" class="headerlink" title="使用docker-compose -v查看版本号,如果是1.xx，version就填2"></a>使用docker-compose -v查看版本号,如果是1.xx，version就填2</h1><p>version: ‘2’<br>services:<br>#服务名称，用户自定义<br>    lnmp:<br>#镜像名称/镜像ID，如果本地不存在compose会拉取镜像，填刚才构建的镜像名<br>        image: carl/lnmp:v1<br>#容器名称<br>#container_name: lnmp<br>#设置镜像变量，启动后的容器会包含这些变量设置<br>        environment:<br>            TZ: Asia/Shanghai<br>        volumes:<br>            - D:\works:/home/wwwroot<br>            - D:\docker\vhost:/usr/local/nginx/conf/vhost<br>#这里把Mysql数据存储目录映射到宿主机,在第三步有临时映射<br>            - D:\docker\mysql:/usr/local/mysql/var<br>        ports:<br>            - “80:80”<br>            - “81:81”<br>            - “82:82”<br>            - “10022:22”<br>            - “8090:8090”<br>            - “800:8080”<br>            - “10000:10000”<br>            - “443:443”<br>        command:<br>            - /bin/bash<br>            - -c<br>            - |<br>                lnmp start &amp;&amp; /usr/sbin/sshd -D &amp;<br>        tty: true</p><pre><code>执行命令开始使用</code></pre><p>docker-compose exec lnmp /bin/bash</p><pre><code>### 八、下次使用把网站内容映射到了linux容器中的/home/wwwroot中，vhost也映射了下次电脑重启了，有2种方式打开继续使用1、在docker-composer.yml执行命令</code></pre><p>docker-compose exec lnmp /bin/bash</p><pre><code>2、docker desktop桌面工具，点击setting-&gt;右上角关闭-&gt;这里有容器列表### 其他可能注意的点1、如果Mysql没有启动，执行以下命令</code></pre><p>yum install initscripts -y</p><pre><code>2、如果navicat mysql连接不上数据库，请参考</code></pre><p><a href="https://blog.csdn.net/me_Lany/article/details/82770948" target="_blank" rel="noopener">https://blog.csdn.net/me_Lany/article/details/82770948</a></p><pre><code>参考站点：[https://www.jianshu.com/p/34a625621a9a](https://www.jianshu.com/p/34a625621a9a)</code></pre>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>使用vue+SheetJS/js-xlsx修改表头并导出excel</title>
+      <link href="cz.github.io/2020/05/06/jsxlsx/"/>
+      <url>cz.github.io/2020/05/06/jsxlsx/</url>
+      
+        <content type="html"><![CDATA[<p>先写个静态的数据试试</p><pre><code>&lt;button @click=&quot;downloadMater&quot;&gt;导出excel&lt;/button&gt;</code></pre><pre><code>methods: {    //创建表头    createWs(data, titles) {        const ws = XLSX.utils.json_to_sheet(            data,            {                header: Object.keys(titles)            }        )        const range = XLSX.utils.decode_range(ws[&#39;!ref&#39;])        for (let c = range.s.c; c &lt;= range.e.c; c++) {            const header = XLSX.utils.encode_col(c) + &#39;1&#39;            ws[header].v = titles[ws[header].v]        }        return ws    },     //导出excel    downloadMater() {        const titles = {            name: &#39;姓名&#39;,            age: &#39;年龄&#39;        }        const data = [            {                name: &#39;jzx&#39;,                age: 17            },            {                name: &#39;wmp&#39;,                age: 17            }        ]        const ws = this.createWs(            data,            titles        )        let wopts = {            bookType: &#39;xlsx&#39;,            bookSST: true,            type: &#39;binary&#39;        };        let workBook = {            SheetNames: [&#39;Sheet1&#39;],            Sheets: {                &#39;Sheet1&#39;: ws            },            Props: {}        };        FileSaver.saveAs(new Blob([this.changeData(XLSX.write(workBook, wopts))], {type: &#39;application/octet-stream&#39;}), &quot;lists.xlsx&quot;)    },    // 字符串转字符流    changeData(s) {        let buf        //如果存在ArrayBuffer对象(es6) 最好采用该对象        if (typeof ArrayBuffer !== &#39;undefined&#39;) {            //1、创建一个字节长度为s.length的内存区域            buf = new ArrayBuffer(s.length);            //2、创建一个指向buf的Unit8视图，开始于字节0，直到缓冲区的末尾            let view = new Uint8Array(buf);            //3、返回指定位置的字符的Unicode编码            for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) &amp; 0xFF;            return buf;        } else {            buf = new Array(s.length);            for (let i = 0; i != s.length; ++i) buf[i] = s.charCodeAt(i) &amp; 0xFF;            return buf;        }    }}</code></pre><p>这样就自定义了表头。</p><p>再把从api请求到的数据放入，用titles做个对应即可。</p><p>参考网站：<a href="https://blog.csdn.net/juzipidemimi/article/details/90815730" target="_blank" rel="noopener">https://blog.csdn.net/juzipidemimi/article/details/90815730</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>study</title>
+      <link href="cz.github.io/2020/04/07/study/"/>
+      <url>cz.github.io/2020/04/07/study/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>git对比工具破解方法</title>
+      <link href="cz.github.io/2020/03/31/beyond_compare/"/>
+      <url>cz.github.io/2020/03/31/beyond_compare/</url>
+      
+        <content type="html"><![CDATA[<p>在用git做项目管理的时候，时常会有冲突，这时候手动修改肯定会覆盖了其他小伙伴的代码。那么就需要使用到对比工具。</p><p>Beyond Compare 4官方注册需要249。所以网上找个方法破解吧。</p><h4 id="1、永久使用需删除目录下所有："><a href="#1、永久使用需删除目录下所有：" class="headerlink" title="1、永久使用需删除目录下所有："></a>1、永久使用需删除目录下所有：</h4><pre><code>C:\Users\***\AppData\Roaming\Scooter Software\Beyond Compare 4</code></pre><h4 id="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："><a href="#2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：" class="headerlink" title="2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题："></a>2、默认点击输入密钥会跳转到网站购买或者输入框闪退问题：</h4><pre><code>删除安装目录下的BCUnrar.dll，然后可以在 帮助-输入秘钥弹出秘钥框</code></pre><h4 id="3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法"><a href="#3、如果Beyond-Compare-4已经过期，无法打开的激活界面方法" class="headerlink" title="3、如果Beyond Compare 4已经过期，无法打开的激活界面方法"></a>3、如果Beyond Compare 4已经过期，无法打开的激活界面方法</h4><pre><code>修改一下下边文件内容为空就可以打开了C:\Users\用户\AppData\Roaming\BeyondCompare\BeyondCompare419.ini</code></pre><h4 id="4、密钥，如果密钥无法使用，可以再在网上搜搜"><a href="#4、密钥，如果密钥无法使用，可以再在网上搜搜" class="headerlink" title="4、密钥，如果密钥无法使用，可以再在网上搜搜"></a>4、密钥，如果密钥无法使用，可以再在网上搜搜</h4><pre><code>w4G-in5u3SH75RoB3VZIX8htiZgw4ELilwvPcHAIQWfwfXv5n0IHDp5hv1BM3+H1XygMtiE0-JBgacjE9tz33sIh542EmsGs1yg638UxVfmWqNLqu-Zw91XxNEiZF7DC7-iV1XbSfsgxI8Tvqr-ZMTxlGCJU+2YLveAc-YXs8ciRTtssts7leEbJ979H5v+G0sw-FwP9bjvE4GCJ8oj+jtlp7wFmpVdzovEhv5Vg3dMqhqTiQHKfmHjYbb0o5OUxq0jOWxg5NKim9dhCVF+avO6mDeRNcOYpl7BatIcd6tsiwdhHKRnyGshyVEjSgRCRY11IgyvdRPnbW8UOVULuTE</code></pre>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 综合 </tag>
+            
+            <tag> 合并工具 </tag>
+            
+            <tag> Beyond Compare破解 </tag>
+            
+            <tag> git合并工具 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>uniapp</title>
+      <link href="cz.github.io/2020/01/07/uniapp/"/>
+      <url>cz.github.io/2020/01/07/uniapp/</url>
+      
+        <content type="html"><![CDATA[<pre><code>TypeError: Cannot read property &#39;components&#39; of undefined</code></pre><pre><code>Failed to resolve async component: function (resolve)</code></pre>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>vi</title>
+      <link href="cz.github.io/2020/01/02/vi/"/>
+      <url>cz.github.io/2020/01/02/vi/</url>
+      
+        <content type="html"><![CDATA[<p><font color='red'>此文特编辑</font></p><p>1.跳转到命令行行首:ctrl+a<br>2.跳转到命令行行尾:ctrl+e<br>3.删除行首到光标位置的字符:ctrl+u<br>4.删除光标位置到行尾的字符:ctrl+k<br>5.清理屏幕:ctrl+l或者clear命令</p><p>生命在于折腾,VI还是要练练的.很早之前就学过VI了，这次重新练练。</p><h3 id="1-文件操作"><a href="#1-文件操作" class="headerlink" title="1. 文件操作"></a>1. 文件操作</h3><p>vi FileName 打开文件 FileName,并将光标置于第一行首。</p><p>vi +n FileName 打开文件 FileName,并将光标置于第 n 行首。</p><p>vi + FileName 打开文件 FileName,并将光标置于最后一行。</p><p>vi + /pattern File 打开文件 File,并将光标置于其中第一个于 pattern 匹配的字符串处。</p><p>vi –r FileName 在上次正用 vi 编辑 FileName 发生系统崩溃后,恢复FileName。</p><h3 id="2-插入"><a href="#2-插入" class="headerlink" title="2. 插入"></a>2. 插入</h3><p>i 在光标前插入。</p><p>a 在光标后插入。</p><p>I 在当前行首插入。</p><p>A 在当前行尾插入。</p><p>o 在当前行之下一新行插入。</p><p>O 在当前行之上新开一行插入。</p><h3 id="3-光标的移动"><a href="#3-光标的移动" class="headerlink" title="3. 光标的移动"></a>3. 光标的移动</h3><p>1G 光标移动到文件第一行的行首。</p><p>K 光标移动到文件上一行的同一列。</p><p>h 光标移动到当前行的前一个字符。</p><p>l 光标移动到当前行的后一个字符</p><p>j 光标移动到下一行的同一列。</p><p>G 光标移动到文件最后一行的行首。</p><h3 id="4-整行的删除、移动"><a href="#4-整行的删除、移动" class="headerlink" title="4. 整行的删除、移动"></a>4. 整行的删除、移动</h3><p>dd 删除光标所在行</p><p>yy 复制光标所在行</p><p>p(小写)  在光标的下一行粘贴yy命令复制的行</p><p>P(大写)  在光标的上一行粘贴yy命令复制的行</p><p>J 对光标所在行和光标所在下一行进行合并成一行。</p><h3 id="5-删除单个字符、删除一个单词"><a href="#5-删除单个字符、删除一个单词" class="headerlink" title="5. 删除单个字符、删除一个单词"></a>5. 删除单个字符、删除一个单词</h3><p>X(大写) 删除光标前一个字符</p><p>X(小写）删除光标后一个字符</p><p>xx   删除单个字符</p><p>dw  删除一个单词</p><h3 id="6-查找替换"><a href="#6-查找替换" class="headerlink" title="6. 查找替换"></a>6. 查找替换</h3><p>/ 在文件中查找输入的内容</p><p>n 进入查询结果的下个内容（由光标所在行进行往上查询）</p><p>N 进入查询结果的下个内容（由光标所在行进行往下查询）</p><h3 id="7-回退操作"><a href="#7-回退操作" class="headerlink" title="7. 回退操作"></a>7. 回退操作</h3><p>u   回退之前的操作</p><p>:e! 重新编辑当前文件,忽略所有的修改</p><h3 id="8-文件保存"><a href="#8-文件保存" class="headerlink" title="8. 文件保存"></a>8. 文件保存</h3><p>ZZ 保存后退出文件</p><p>:w保存并返回指令模式</p><p>:w!覆盖已存在的文件</p><p>:q退出</p><p>:q!退出并丢掉所有未保存信息</p><p>:wq!保存并退出</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> vi </tag>
+            
+            <tag> vim </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>别再百度行天下了,多用google吧</title>
+      <link href="cz.github.io/2020/01/02/teasing/"/>
+      <url>cz.github.io/2020/01/02/teasing/</url>
+      
+        <content type="html"><![CDATA[<p>做为一名程序猿,会经常搜索问题，我的博客是用 git 管理项目,webhook 拉取代码,使用了 cloudflare 的 ssl 和 cdn，开启了缓存，所以每次 git push 了代码后，需要点击 cloudflare 中的 Purge Cache 清除,然后就百度了一下这个问题。</p><p>发现如下文章<a href="https://www.minwt.com/website/server/21289.html" target="_blank" rel="noopener">免登後台！手動快速清除 CloudFlare 的 Page Rules 頁面快取 https://www.minwt.com/website/server/21289.html</a>,按操作直接复制粘贴,放到 mac bash 下执行，提示</p><pre><code>-bash: br: No such file or directory</code></pre><p>咦,提示没有这样的文件或目录,我 curl 没装?<br>查看一下 crul,执行</p><pre><code>curl --version</code></pre><p>发现有啊，然后果断去 cloudflare 官网看 api,发现百度到的文章多了几个 br</p><pre><code>&lt;/br&gt;</code></pre><p>小坑了一把，然后放到自己的 webhook 中,完工</p><blockquote><p>curl -X DELETE “<a href="https://api.cloudflare.com/client/v4/zones/" target="_blank" rel="noopener">https://api.cloudflare.com/client/v4/zones/</a><font color="red">ZoneID</font>/purge_cache” <br> -H “X-Auth-Email: <font color="red">Email</font>“ <br> -H “X-Auth-Key: <font color="red">Global API Key</font>“ <br> -H “Content-Type: application/json” <br> –data ‘{“purge_everything”:true}’</p></blockquote><p>提示清除成功</p><pre><code>{&quot;result&quot;:{&quot;id&quot;:&quot;c14fc1a5df8629ba7e1c7d153836b9ad&quot;},&quot;success&quot;:true,&quot;errors&quot;:[],&quot;messages&quot;:[]}</code></pre><p>最后吐槽一下，很多文章都是复制粘贴,格式错乱,严重影响阅读体验,很多时候,30%的精力浪费在填坑中,来自自己挖的坑,网上复制粘贴的坑,希望多点原创,少点ctrl+c。<br>答应我,别再百度行天下了.</p><p><a href="https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns" target="_blank" rel="noopener">cloudflare 官方 api https://api.cloudflare.com/#railgun-connections-for-a-zone-list-available-railguns</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>总结网上的前端面试题</title>
+      <link href="cz.github.io/2019/12/27/web/interview/"/>
+      <url>cz.github.io/2019/12/27/web/interview/</url>
+      
+        <content type="html"><![CDATA[<p>整理了网上的一些前端面试题,也算是为自己做一个笔记吧</p><p> <font size=5>1. 什么是防抖和节流？有什么区别？如何实现？</font></p><blockquote><p>1.1 防抖</p><p>触发高频事件后 n 秒内函数只会执行一次，如果 n 秒内高频事件再次被触发，则重新计算时间；</p><p>1.2 节流</p><p>高频事件触发，但在 n 秒内只会执行一次，所以节流会稀释函数的执行频率。</p><p>每次触发事件时都判断当前是否有等待执行的延时函数。</p></blockquote><h3 id="html-amp-css"><a href="#html-amp-css" class="headerlink" title="html&amp; css"></a>html&amp; css</h3><p><font size=5>1.  简述一下src与href的区别</font></p><blockquote><p>href是指向网络资源所在位置，建立和当前元素（锚点）或当前文档（链接）之间的链接，用于超链接。<br>src是指向外部资源的位置，指向的内容将会嵌入到文档中当前标签所在位置；在请求src资源时会将其指向的资源下载并应用到文档内，例如js脚本，img图片和frame等元素。<br>当浏览器解析到该元素时，会暂停其他资源的下载和处理，直到将该资源加载、编译、执行完毕，图片和框架等元素也如此，类似于将所指向资源嵌入当前标签内。这也是为什么将js脚本放在底部而不是头部。</p></blockquote><p><font size=5>2.  Css单位px，rem，em，vw，vh的区别</font></p><p>px</p><blockquote><p>px就是pixel像素的缩写，相对长度单位，网页设计常用的基本单位。像素px是相对于显示器屏幕分辨率而言的</p></blockquote><p>em</p><blockquote><p>em是相对长度单位。相对于当前对象内文本的字体尺寸（参考物是父元素的font-size）<br>如当前父元素的字体尺寸未设置，则相对于浏览器的默认字体尺寸<br>特点：<br>　　1. em的值并不是固定的；<br>　　2. em会继承父级元素的字体大小</p></blockquote><p>rem</p><blockquote><p>rem是CSS3新增的一个相对单位，rem是相对于HTML根元素的字体大小（font-size）来计算的长度单位<br>如果你没有设置html的字体大小，就会以浏览器默认字体大小，一般是16px</p></blockquote><pre><code>html{font-size: 62.5%}  /* 10 ÷ 16 × 100% = 62.5% */body{font-size: 1.4rem;} /* 1.4 × 10px = 14px *//*在根元素中定义了一个基本字体大小为62.5%（也就是10px。设置这个值主要方便计算，如果没有设置，将是以“16px”为基准 ）*/</code></pre><blockquote><p>优点是，只需要设置根目录的大小就可以把整个页面的成比例的调好<br>rem兼容性：除了IE8及更早版本外，所有浏览器均已支持rem<br>em与rem的区别：<br>　　rem是相对于根元素（html）的字体大小，而em是相对于其父元素的字体大小<br>两者使用规则：<br>如果这个属性根据它的font-size进行测量，则使用em<br>其他的一切事物属性均使用rem<br>这里提供了一个px、em、rem单位的转换工具：<a href="http://pxtoem.com/" target="_blank" rel="noopener">http://pxtoem.com/</a></p></blockquote><p>vw、vh</p><blockquote><p>vw、vh、vmax、vmin这四个单位都是基于视口<br>vw是相对视口（viewport）的宽度而定的，长度等于视口宽度的1/100<br>假如浏览器的宽度为200px，那么1vw就等于2px（200px/100）<br>vh是相对视口（viewport）的高度而定的，长度等于视口高度的1/100<br>假如浏览器的高度为500px，那么1vh就等于5px（500px/100）<br>vmin和vmax是相对于视口的高度和宽度两者之间的最小值或最大值</p></blockquote><pre><code>/*如果浏览器的高为300px、宽为500px，那么1vmin就是3px，1vmax就是5px；如果浏览器的高为800px，宽为1080px，那么1vmin也是8px，1vmax也是10.8px*/</code></pre><p>其他单位：</p><blockquote><p>%（百分比）<br>一般来说就是相对于父元素<br>1、对于普通定位元素就是我们理解的父元素<br>2、对于position: absolute;的元素是相对于已定位的父元素<br>3、对于position: fixed;的元素是相对于ViewPort（可视窗口）</p></blockquote><p>vm</p><blockquote><p>css3新单位，相对于视口的宽度或高度中较小的那个<br>其中最小的那个被均分为100单位的vm<br>比如：浏览器高度900px，宽度1200px，取最小的浏览器高度，1 vm = 900px/100 = 9 px<br>缺点：兼容性差</p></blockquote><h3 id="JS"><a href="#JS" class="headerlink" title="JS"></a>JS</h3><ol><li>(0.1 + 0.2) 等于多少 为什么?<blockquote><p>0.30000000000000004<br>因为 JS 采用 IEEE 754 双精度版本（64位），并且只要采用 IEEE 754 的语言都有该问题。我们都知道计算机表示十进制是采用二进制表示的，所以 0.1 在二进制表示为</p></blockquote></li></ol><pre><code>0.1 = 2^-4 * 1.10011(0011) // (0011) 表示循环</code></pre><p>小数算二进制和整数不同。乘法计算时，只计算小数位，整数位用作每一位的二进制，并且得到的第一位为最高位。所以我们得出 0.1 = 2^-4 * 1.10011(0011)，那么 0.2 的演算也基本如上所示，只需要去掉第一步乘法，所以得出 0.2 = 2^-3 * 1.10011(0011)。</p><p>回来继续说 IEEE 754 双精度。六十四位中符号位占一位，整数位占十一位，其余五十二位都为小数位。因为 0.1 和 0.2 都是无限循环的二进制了，所以在小数位末尾处需要判断是否进位（就和十进制的四舍五入一样）。</p><p>所以 2^-4 * 1.10011…001 进位后就变成了 2^-4 * 1.10011(0011 * 12次)010 。那么把这两个二进制加起来会得出 2^-2 * 1.0011(0011 * 11次)0100 , 这个值算成十进制就是 0.30000000000000004</p><p>下面说一下原生解决办法，如下代码所示</p><h3 id="前端框架"><a href="#前端框架" class="headerlink" title="前端框架"></a>前端框架</h3><h4 id="VUE"><a href="#VUE" class="headerlink" title="VUE"></a>VUE</h4><h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://yq.aliyun.com/articles/613474" target="_blank" rel="noopener">几道高级前端面试题解析 https://yq.aliyun.com/articles/613474</a></p>]]></content>
+      
+      
       <categories>
-        <category>前端</category>
+          
+          <category> 前端 </category>
+          
       </categories>
-      <tags>
-        <tag>前端</tag>
-        <tag>前端面试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>用梯子,看一看世界</title>
-    <url>cz.github.io/2019/12/25/ssr/</url>
-    <content><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3>]]></content>
-  </entry>
-  <entry>
-    <title>MAC系统工具推荐</title>
-    <url>cz.github.io/2019/12/25/mac_tool/</url>
-    <content><![CDATA[<h3 id="MAC工具下载站推荐"><a href="#MAC工具下载站推荐" class="headerlink" title="MAC工具下载站推荐"></a>MAC工具下载站推荐</h3><p><a href="http://www.xclient.info/" target="_blank" rel="noopener">xclient http://www.xclient.info/</a></p>
-<h3 id="前端工具"><a href="#前端工具" class="headerlink" title="前端工具"></a>前端工具</h3><ul>
-<li>webstorm</li>
-</ul>
-<h3 id="后端工具"><a href="#后端工具" class="headerlink" title="后端工具"></a>后端工具</h3><ol>
-<li></li>
-</ol>
-<h3 id="全栈工具"><a href="#全栈工具" class="headerlink" title="全栈工具"></a>全栈工具</h3><ol>
-<li>Sourcetree<blockquote>
-<p>用来管理git,方便push、pull,以及合并冲突,有window和mac多端</p>
-</blockquote>
-</li>
-<li>本地WEB服务器,一键配置<blockquote>
-<p>MAC推荐使用MAMP PRO<br>WINDOW推荐使用PHPSTUDY</p>
-</blockquote>
-</li>
-<li>终端<blockquote>
-<p>MAC推荐使用iTerm<br>WINDOW推荐下载git,然后在git里输入命令,告别cmd</p>
-</blockquote>
-</li>
-<li>抓包<blockquote>
-<p>MAC推荐使用Charles<br>WINDOW也还是推荐使用Charles,虽然很多人使用Fiddler,二者差不多</p>
-</blockquote>
-</li>
-<li>phpstorm<blockquote>
-<p>请求api地址</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="系统必备工具"><a href="#系统必备工具" class="headerlink" title="系统必备工具"></a>系统必备工具</h3><ol>
-<li>Snipaste<blockquote>
-<p>截图工具,可以在屏幕上贴图,方便再次截图,以前都是用QQ截图,总是觉得也方便省事,不需要单独下载一个软件</p>
-</blockquote>
-</li>
-<li>ShadowsocksR<blockquote>
-<p>梯子,IT程序猿必备,多用GOOGLE,多看国外文档</p>
-</blockquote>
-</li>
-<li>chrome<blockquote>
-<p>简洁啊,比什么360之流好的不是一点点</p>
-</blockquote>
-</li>
-<li>chrome插件Bitwarden<blockquote>
-<p>一个密码管理插件,也有提供软件下载,登录后可以同步你的密码,生成强密码,如果觉得不放心,可以自己搭个服务器来存放</p>
-</blockquote>
-</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>系统工具推荐</tag>
-        <tag>前端后端必备</tag>
-        <tag>全栈工具</tag>
-        <tag>前端</tag>
-        <tag>后端</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>让你的项目自动化部署到服务器</title>
-    <url>cz.github.io/2019/12/25/webhook/</url>
-    <content><![CDATA[<p>通俗点讲,就是在本地开发完成,然后 git push 到 gitlab 上,然后自动更新到服务器,无需手动进入服务器手动 git pull</p>
-<p>简单点讲,就是 git push 后，有个钩子( <a href="http://www.a.com/update.php类似这样的网址" target="_blank" rel="noopener">http://www.a.com/update.php类似这样的网址</a> )请求一下,update.php 代码中会执行相关命令,代替手动 git pull</p>
-<blockquote>
-<p><font color='red'>建议：建立一个 demo 项目，放到 git 上，把整个流程跑通了再用在其他项目中,要不然你的 git 记录会有很多垃圾 push 信息</font></p>
-</blockquote>
-<h3 id="第一步-登录你的服务器"><a href="#第一步-登录你的服务器" class="headerlink" title="第一步:登录你的服务器"></a>第一步:登录你的服务器</h3><p>不管用 password 还是 ssh 登录服务器均可,不是本地介绍重点,简单略过.<font color='red'>建议用 ssh 登录</font><br>具体实现可以查看资料</p>
-<p><a href="https://www.jianshu.com/p/312c750cc42f" target="_blank" rel="noopener">Linux 篇：Linux ssh 登录</a><br><a href="https://www.jianshu.com/p/3ac07b1cce82" target="_blank" rel="noopener">服务器搭建：（二）SSH 登录详解</a></p>
-<h3 id="第二步-查看你的-nginx-所属用户"><a href="#第二步-查看你的-nginx-所属用户" class="headerlink" title="第二步:查看你的 nginx 所属用户"></a>第二步:查看你的 nginx 所属用户</h3><p>因为是个人博客项目,偷个懒,直接 lnmp 一键环境搭建,没搭建环境的可以去官网<a href="https://lnmp.org/" target="_blank" rel="noopener">lnmp 官网 https://lnmp.org/</a>查看安装命令即可,在服务器搭建环境如下:<br>已安装好 nginx、PHP 等环境的忽略下面的命令</p>
-<pre><code>wget http://soft.vpser.net/lnmp/lnmp1.6.tar.gz -cO lnmp1.6.tar.gz &amp;&amp; tar zxf lnmp1.6.tar.gz &amp;&amp; cd lnmp1.6 &amp;&amp; ./install.sh lnmp</code></pre><p>安装好环境以后，执行命令</p>
-<pre><code>cd /usr/local/nginx/conf/  #每个人的安装路径可能不同,最关键是找到nginx.conf,查看执行用户名称
-vi nginx.conf   #第一行,查看到当前nginx的执行用户是user  www www;</code></pre><h3 id="第三步-给服务器项目目录权限"><a href="#第三步-给服务器项目目录权限" class="headerlink" title="第三步:给服务器项目目录权限"></a>第三步:给服务器项目目录权限</h3><pre><code>cd /home  #先进入/home/目录
-ll   # 或者 ls-a查看wwwroot所属权限</code></pre><blockquote>
-<p>drwx—— 3 www www 111 Dec 26 09:26 www<br>drwxrwxrwx 2 root root 79 Dec 25 14:32 wwwlogs<br>drwxr-xr-x 6 www www 74 Dec 25 16:35 wwwroot</p>
-</blockquote>
-<p>#如果权限这个不是 www，就执行以下命令</p>
-<pre><code>chown -R www:www /home/wwwroot/ #这个是LNMP默认存放项目的地方,换成你自己的</code></pre><p>这样目录就可以移交给 www 用户了，现在 www 用户可以访问这个目录和.git 文件了。</p>
-<p>切换到执行用户,接着我们我们切换到 www 用户</p>
-<pre><code>su www</code></pre><p>结果显示“This account is currently not available.”，啥？这不让我登录？别急，这是因为 linux 连 www 帐户登录 shell 的权利都给剥夺了，我们暂时给 www 权利就好了。到/etc/passwd 中，把 www 用户的配置修改一下，让他的登录 shell 变成/bin/bash</p>
-<pre><code>vi /etc/passwd</code></pre><blockquote>
-<p>www:x:1001:1001::/home/www:<font color='red'>/sbin/nologin</font><br>(建议注释原来的,重新复制一行修改)<br>www:x:1001:1001::/home/www:<font color='red'>/bin/bash</font></p>
-</blockquote>
-<p>然后 www 用户就有登录权限了。我们用 su www 重新切换一次，就会发现你现在是以 www 用户登录了。</p>
-<pre><code>su www</code></pre><h3 id="第四步-为-www-这个用户生成密钥"><a href="#第四步-为-www-这个用户生成密钥" class="headerlink" title="第四步:为 www 这个用户生成密钥"></a>第四步:为 www 这个用户生成密钥</h3><p>第一步也有相关资料推荐</p>
-<pre><code>ssh-keygen</code></pre><blockquote>
-<p>注意:.ssh 的存放目录,一般是/home/当前用户名,然后接下来的操作都是回车<br>Enter file in which to save the key (<font color='red'>/home/www/.ssh/id_rsa</font>):</p>
-</blockquote>
-<h3 id="第五步-把生成的-ssh-key-加入到你的-gitlab"><a href="#第五步-把生成的-ssh-key-加入到你的-gitlab" class="headerlink" title="第五步:把生成的 ssh key 加入到你的 gitlab"></a>第五步:把生成的 ssh key 加入到你的 gitlab</h3><p><font color='red'>-&gt;注意:不建议把 root 密钥增加到 gitlab 上,root 的密钥用于登录管理服务器就好,把 www 用户所属的密钥增加到 gitlab 即可</font><br>不管你是用以下哪个 git 平台去管理,皆大同小异,目前列举比较流行的几种,一般都是在(个人设置-&gt;ssh 公钥-&gt;新增)</p>
-<ol>
-<li><a href="https://gitee.com/" target="_blank" rel="noopener">码云 https://gitee.com/</a></li>
-<li><a href="http://code.aliyun.com/" target="_blank" rel="noopener">阿里云 http://code.aliyun.com/</a> <font color='red'>-&gt;我使用的是这个</font></li>
-<li><a href="https://github.com/" target="_blank" rel="noopener">github https://github.com/</a></li>
-<li><a href="https://coding.net/" target="_blank" rel="noopener">CODING https://coding.net/</a></li>
-<li><a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">gitlab 内部搭建的 git 服务器</a></li>
-<li>等待添加</li>
-</ol>
-<h3 id="第六步-拉取-gitlab-上的项目"><a href="#第六步-拉取-gitlab-上的项目" class="headerlink" title="第六步:拉取 gitlab 上的项目"></a>第六步:拉取 gitlab 上的项目</h3><pre><code>cd /home/wwwroot
-git clone git@code.aliyun.com:personage/demo.git #改成你的项目地址,如果拉取不成功,说明你的密钥没弄好</code></pre><h3 id="第七步-配置-nginx"><a href="#第七步-配置-nginx" class="headerlink" title="第七步:配置 nginx"></a>第七步:配置 nginx</h3><p>因为我用 lnmp vhost add 增加了我的域名配置,自动在/home/wwwroot 下生成了 <a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">www.chengtianzhu.com</a> 目录,所以我直接修改</p>
-<pre><code>chattr -i www.chengtianzhu.com/.user.ini  #lnmp生成时有个.user.ini,默认无法直接删除
-rm -rf www.chengtianzhu.com/ #删除默认生成的目录
-mv demo/ www.chengtianzhu.com/  把git拉取下来的项目重命名</code></pre><p>在浏览器中输入 <a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">www.chengtianzhu.com</a>, 看是否能否访问,如果是子目录，需要自己去 nginx 配置中修改路径</p>
-<h3 id="第九步-把自动拉取git的php代码放到项目中"><a href="#第九步-把自动拉取git的php代码放到项目中" class="headerlink" title="第九步:把自动拉取git的php代码放到项目中"></a>第九步:把自动拉取git的php代码放到项目中</h3><p>以<a href="http://www.chengtianzhu.com/update.php" target="_blank" rel="noopener">www.chengtianzhu.com/update.php</a> 为例,最好是单独配置个地址,因为是外部公共访问的:</p>
-<pre><code>&lt;?php
-
-class Deploy {
-
-    /**
-     * A callback function to call after the deploy has finished.
-     *
-     * @var callback
-     */
-    public $post_deploy;
-
-    /**
-     * The name of the file that will be used for logging deployments. Set to
-     * FALSE to disable logging.
-     *
-     * @var string
-     */
-    private $_log = &#39;deployments.log&#39;;
-
-    /**
-     * The timestamp format used for logging.
-     *
-     * @link    http://www.php.net/manual/en/function.date.php
-     * @var     string
-     */
-    private $_date_format = &#39;Y-m-d H:i:sP&#39;;
-
-    /**
-     * The name of the branch to pull from.
-     *
-     * @var string
-     */
-    private $_branch = &#39;master&#39;;
-
-    /**
-     * The name of the remote to pull from.
-     *
-     * @var string
-     */
-    private $_remote = &#39;origin&#39;;
-
-    /**
-     * The directory where your website and git repository are located, can be
-     * a relative or absolute path
-     *
-     * @var string
-     */
-    private $_directory;
-
-    /**
-     * Sets up defaults.
-     *
-     * @param  string  $directory  Directory where your website is located
-     * @param  array   $data       Information about the deployment
-     */
-    public function __construct($directory, $options = array())
-    {
-        // Determine the directory path        
-                // Create the log file
-                file_put_contents($filename, &#39;&#39;);
-
-                // Allow anyone to write to log files
-                chmod($filename, 0666);
-            }
-
-            // Write the message into the log file
-            // Format: time --- type: message
-            file_put_contents($filename, date($this-&gt;_date_format).&#39; --- &#39;.$type.&#39;: &#39;.$message.PHP_EOL, FILE_APPEND);
-        }
-    }
-
-    /**
-     * Executes the necessary commands to deploy the website.
-     */
-    public function execute()
-    {
-        try
-        {
-            // Make sure we&#39;re in the right directory
-            chdir($this-&gt;_directory);
-            $this-&gt;log(&#39;Changing working directory... &#39;);
-            // Discard any changes to tracked files since our last deploy
-            exec(&#39;git reset --hard HEAD&#39;, $output);
-            $this-&gt;log(&#39;Reseting repository... &#39;.implode(&#39; &#39;, $output));
-
-            // Update the local repository
-            exec(&#39;git pull &#39;.$this-&gt;_remote.&#39; &#39;.$this-&gt;_branch, $output);
-            $this-&gt;log(&#39;Pulling in changes... &#39;.implode(&#39; &#39;, $output));
-            // Secure the .git directory
-            exec(&#39;chmod -R og-rx .git&#39;);
-            $this-&gt;log(&#39;Securing .git directory... &#39;);
-
-            if (is_callable($this-&gt;post_deploy))
-            {
-                call_user_func($this-&gt;post_deploy, $this-&gt;_data);
-            }
-
-            $this-&gt;log(&#39;Deployment successful.&#39;);
-        }
-        catch (Exception $e)
-        {
-            $this-&gt;log($e, &#39;ERROR&#39;);
-        }
-    }
-
-}
-
-// This is just an example
-$deploy = new Deploy(&#39;/home/wwwroot/www.chengtianzhu.com/&#39;); //修改成你的项目路径
-
-$deploy-&gt;execute();
-
-?&gt;</code></pre><h3 id="第十步-gitlab配置"><a href="#第十步-gitlab配置" class="headerlink" title="第十步:gitlab配置"></a>第十步:gitlab配置</h3><p>在项目–&gt;设置–&gt;WebHooks,增加刚才的<a href="http://www.chengtianzhu.com/update.php" target="_blank" rel="noopener">www.chengtianzhu.com/update.php</a><br>或者在setting–&gt;integrations,增加钩子<br>增加完成后可以点击&lt;测试钩子&gt;按钮测试一下.<br>显示200成功</p>
-<blockquote>
-<p>Hook executed successfully: HTTP 200<br>但是一般还是拉取不了代码,因为第九步的php代码使用了exec函数,默认是禁用的.<br>我们写一个简单的demo测试一下,在服务器环境下:<br>vi test.php<br>内容为:</p>
-</blockquote>
-<pre><code>&lt;?php
-    exec(&#39;php hello.php&#39;,$out,$status);
-    var_dump($out);
-?&gt;</code></pre><hr>
-<p>再创建一个hello.php</p>
-<blockquote>
-<p>vi hello.php</p>
-</blockquote>
-<p>内容为:</p>
-<pre><code>&lt;?php
- echo &#39;hello world&#39;;
-?&gt;</code></pre><hr>
-<p>保存后,执行试一下</p>
-<blockquote>
-<p>php test.php</p>
-</blockquote>
-<p>提示:exec() has been disabled for security reasons，说明exec用不了</p>
-<pre><code>PHP Notice:  Undefined variable: out in /home/wwwroot/www.chengtianzhu.com/test.php on line 2
-PHP Notice:  Undefined variable: return in /home/wwwroot/www.chengtianzhu.com/test.php on line 2
-PHP Warning:  exec() has been disabled for security reasons in /home/wwwroot/www.chengtianzhu.com/test.php on line 2
-PHP Notice:  Undefined variable: o in /home/wwwroot/www.chengtianzhu.com/test.php on line 3
-NULL</code></pre><h3 id="第十一步-开启exec"><a href="#第十一步-开启exec" class="headerlink" title="第十一步:开启exec"></a>第十一步:开启exec</h3><p>首先要用find命令查找到php.ini所在位置</p>
-<blockquote>
-<p>find / -name php.ini</p>
-</blockquote>
-<p>得到好多结果，关注最后台一条信息</p>
-<pre><code>/usr/local/php/etc/php.ini</code></pre><p>用VI修改一下</p>
-<pre><code>vi /usr/local/php/etc/php.ini</code></pre><p>查找disable_functions = passthru,exec,system,chroot或者查找disable_functions,把exec删掉保存.<br>修改后要重启才能生效，这里的重启并<font color='red'>不是重启nginx</font>-一定要注意。<br>我这里使用的是Lnmp，使用lnmp reload</p>
-<pre><code>lnmp reload #或者 sudo /etc/init.d/php-fpm restart</code></pre><p>这个时间再执行第十步的php test.php,显示结果为:</p>
-<pre><code>array(1) {
-  [0]=&gt;
-  string(11) &quot;hello world&quot;
-}</code></pre><p>这时表示已经可以执行钩子(update.php)，exec的代码了.回到你的本地测试一下，随便新增或者修改一些东西,再git提交.服务器显示已成功.</p>
-<h3 id="第十二步-恢复执行用户的-nologin"><a href="#第十二步-恢复执行用户的-nologin" class="headerlink" title="第十二步:恢复执行用户的 nologin"></a>第十二步:恢复执行用户的 nologin</h3><p>不要忘了第三步的时候修改了/etc/passwd配置，现在把 www 用户的 nologin 选项恢复回去哟</p>
-<pre><code>vi /etc/passwd</code></pre><blockquote>
-<p>www:x:1001:1001::/home/www:<font color='red'>/bin/bash</font><br>(改回原来的)<br>www:x:1001:1001::/home/www:<font color='red'>/sbin/nologin</font></p>
-</blockquote>
-<h3 id="参考网站"><a href="#参考网站" class="headerlink" title="参考网站"></a>参考网站</h3><ol>
-<li><a href="https://www.jianshu.com/p/59a54e2e27d3" target="_blank" rel="noopener">gitlab 通过 webhook 自动部署 https://www.jianshu.com/p/59a54e2e27d3</a></li>
-<li><a href="https://segmentfault.com/a/1190000003908244?utm_source=tag-newest" target="_blank" rel="noopener">Webhook 实践 —— 自动部署 https://segmentfault.com/a/1190000003908244?utm_source=tag-newest</a></li>
-<li><a href="https://www.jianshu.com/p/00bc0323e83f" target="_blank" rel="noopener">[后端]gitlab 之 webhook 自动部署 https://www.jianshu.com/p/00bc0323e83f</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>webhook</tag>
-        <tag>git自动</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac默认python切换升级为python3</title>
-    <url>cz.github.io/2019/12/24/python/</url>
-    <content><![CDATA[<h3 id="先查看系统环境和python环境"><a href="#先查看系统环境和python环境" class="headerlink" title="先查看系统环境和python环境"></a>先查看系统环境和python环境</h3><p>我的电脑为环境为mac OS High Sierra 10.13.6</p>
-<h3 id="第一步-在终端输入命令查看python"><a href="#第一步-在终端输入命令查看python" class="headerlink" title="第一步: 在终端输入命令查看python"></a><strong>第一步:</strong> 在终端输入命令查看python</h3><pre><code>    python -V</code></pre><p>显示如下:</p>
-<blockquote>
-<p>Python 2.7.10</p>
-</blockquote>
-<h3 id="第二步-然后用brew安装pyhton3（建议使用brew管理）"><a href="#第二步-然后用brew安装pyhton3（建议使用brew管理）" class="headerlink" title="第二步: 然后用brew安装pyhton3（建议使用brew管理）"></a><strong>第二步:</strong> 然后用brew安装pyhton3（<font color=red><strong>建议使用brew管理</strong></font>）</h3><pre><code>   brew install python3</code></pre><h3 id="第三步-查看python3所在路径"><a href="#第三步-查看python3所在路径" class="headerlink" title="第三步: 查看python3所在路径"></a><strong>第三步:</strong> 查看python3所在路径</h3><pre><code>    which python3</code></pre><p>显示如下:</p>
-<blockquote>
-<p>/usr/local/bin/python3</p>
-</blockquote>
-<h3 id="第四步-修改配置"><a href="#第四步-修改配置" class="headerlink" title="第四步: 修改配置"></a><strong>第四步:</strong> 修改配置</h3><blockquote>
-<p>可以先在终端 cd /System/Library/Frameworks/Python.framework/Versions/2.7/bin/，看python2的路径是否存在 </p>
-</blockquote>
-<pre><code>    vi ~/.bash_profile</code></pre><p>增加以下3行:</p>
-<pre><code>alias python2=&#39;/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7&#39;
-alias python3=&#39;/usr/local/bin/python3&#39; #第三步的路径,注意是不是一致的
-alias python=python3</code></pre><h3 id="第五步-让配置文件生效"><a href="#第五步-让配置文件生效" class="headerlink" title="第五步: 让配置文件生效"></a><strong>第五步:</strong> 让配置文件生效</h3><pre><code>source ~/.bash_profile</code></pre><h3 id="完工"><a href="#完工" class="headerlink" title="完工"></a>完工</h3><p>最后:<font color=red size=5>关闭终端</font>,重新输入python -v</p>
-<pre><code>python -v</code></pre>]]></content>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> 前端面试 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>用梯子,看一看世界</title>
+      <link href="cz.github.io/2019/12/25/ssr/"/>
+      <url>cz.github.io/2019/12/25/ssr/</url>
+      
+        <content type="html"><![CDATA[<h3 id=""><a href="#" class="headerlink" title=""></a></h3>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MAC系统工具推荐</title>
+      <link href="cz.github.io/2019/12/25/mac_tool/"/>
+      <url>cz.github.io/2019/12/25/mac_tool/</url>
+      
+        <content type="html"><![CDATA[<h3 id="MAC工具下载站推荐"><a href="#MAC工具下载站推荐" class="headerlink" title="MAC工具下载站推荐"></a>MAC工具下载站推荐</h3><p><a href="http://www.xclient.info/" target="_blank" rel="noopener">xclient http://www.xclient.info/</a></p><h3 id="前端工具"><a href="#前端工具" class="headerlink" title="前端工具"></a>前端工具</h3><ul><li>webstorm</li></ul><h3 id="后端工具"><a href="#后端工具" class="headerlink" title="后端工具"></a>后端工具</h3><ol><li></li></ol><h3 id="全栈工具"><a href="#全栈工具" class="headerlink" title="全栈工具"></a>全栈工具</h3><ol><li>Sourcetree<blockquote><p>用来管理git,方便push、pull,以及合并冲突,有window和mac多端</p></blockquote></li><li>本地WEB服务器,一键配置<blockquote><p>MAC推荐使用MAMP PRO<br>WINDOW推荐使用PHPSTUDY</p></blockquote></li><li>终端<blockquote><p>MAC推荐使用iTerm<br>WINDOW推荐下载git,然后在git里输入命令,告别cmd</p></blockquote></li><li>抓包<blockquote><p>MAC推荐使用Charles<br>WINDOW也还是推荐使用Charles,虽然很多人使用Fiddler,二者差不多</p></blockquote></li><li>phpstorm<blockquote><p>请求api地址</p></blockquote></li></ol><h3 id="系统必备工具"><a href="#系统必备工具" class="headerlink" title="系统必备工具"></a>系统必备工具</h3><ol><li>Snipaste<blockquote><p>截图工具,可以在屏幕上贴图,方便再次截图,以前都是用QQ截图,总是觉得也方便省事,不需要单独下载一个软件</p></blockquote></li><li>ShadowsocksR<blockquote><p>梯子,IT程序猿必备,多用GOOGLE,多看国外文档</p></blockquote></li><li>chrome<blockquote><p>简洁啊,比什么360之流好的不是一点点</p></blockquote></li><li>chrome插件Bitwarden<blockquote><p>一个密码管理插件,也有提供软件下载,登录后可以同步你的密码,生成强密码,如果觉得不放心,可以自己搭个服务器来存放</p></blockquote></li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 系统工具推荐 </tag>
+            
+            <tag> 前端后端必备 </tag>
+            
+            <tag> 全栈工具 </tag>
+            
+            <tag> 前端 </tag>
+            
+            <tag> 后端 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>让你的项目自动化部署到服务器</title>
+      <link href="cz.github.io/2019/12/25/webhook/"/>
+      <url>cz.github.io/2019/12/25/webhook/</url>
+      
+        <content type="html"><![CDATA[<p>通俗点讲,就是在本地开发完成,然后 git push 到 gitlab 上,然后自动更新到服务器,无需手动进入服务器手动 git pull</p><p>简单点讲,就是 git push 后，有个钩子( <a href="http://www.a.com/update.php类似这样的网址" target="_blank" rel="noopener">http://www.a.com/update.php类似这样的网址</a> )请求一下,update.php 代码中会执行相关命令,代替手动 git pull</p><blockquote><p><font color='red'>建议：建立一个 demo 项目，放到 git 上，把整个流程跑通了再用在其他项目中,要不然你的 git 记录会有很多垃圾 push 信息</font></p></blockquote><h3 id="第一步-登录你的服务器"><a href="#第一步-登录你的服务器" class="headerlink" title="第一步:登录你的服务器"></a>第一步:登录你的服务器</h3><p>不管用 password 还是 ssh 登录服务器均可,不是本地介绍重点,简单略过.<font color='red'>建议用 ssh 登录</font><br>具体实现可以查看资料</p><p><a href="https://www.jianshu.com/p/312c750cc42f" target="_blank" rel="noopener">Linux 篇：Linux ssh 登录</a><br><a href="https://www.jianshu.com/p/3ac07b1cce82" target="_blank" rel="noopener">服务器搭建：（二）SSH 登录详解</a></p><h3 id="第二步-查看你的-nginx-所属用户"><a href="#第二步-查看你的-nginx-所属用户" class="headerlink" title="第二步:查看你的 nginx 所属用户"></a>第二步:查看你的 nginx 所属用户</h3><p>因为是个人博客项目,偷个懒,直接 lnmp 一键环境搭建,没搭建环境的可以去官网<a href="https://lnmp.org/" target="_blank" rel="noopener">lnmp 官网 https://lnmp.org/</a>查看安装命令即可,在服务器搭建环境如下:<br>已安装好 nginx、PHP 等环境的忽略下面的命令</p><pre><code>wget http://soft.vpser.net/lnmp/lnmp1.6.tar.gz -cO lnmp1.6.tar.gz &amp;&amp; tar zxf lnmp1.6.tar.gz &amp;&amp; cd lnmp1.6 &amp;&amp; ./install.sh lnmp</code></pre><p>安装好环境以后，执行命令</p><pre><code>cd /usr/local/nginx/conf/  #每个人的安装路径可能不同,最关键是找到nginx.conf,查看执行用户名称vi nginx.conf   #第一行,查看到当前nginx的执行用户是user  www www;</code></pre><h3 id="第三步-给服务器项目目录权限"><a href="#第三步-给服务器项目目录权限" class="headerlink" title="第三步:给服务器项目目录权限"></a>第三步:给服务器项目目录权限</h3><pre><code>cd /home  #先进入/home/目录ll   # 或者 ls-a查看wwwroot所属权限</code></pre><blockquote><p>drwx—— 3 www www 111 Dec 26 09:26 www<br>drwxrwxrwx 2 root root 79 Dec 25 14:32 wwwlogs<br>drwxr-xr-x 6 www www 74 Dec 25 16:35 wwwroot</p></blockquote><p>#如果权限这个不是 www，就执行以下命令</p><pre><code>chown -R www:www /home/wwwroot/ #这个是LNMP默认存放项目的地方,换成你自己的</code></pre><p>这样目录就可以移交给 www 用户了，现在 www 用户可以访问这个目录和.git 文件了。</p><p>切换到执行用户,接着我们我们切换到 www 用户</p><pre><code>su www</code></pre><p>结果显示“This account is currently not available.”，啥？这不让我登录？别急，这是因为 linux 连 www 帐户登录 shell 的权利都给剥夺了，我们暂时给 www 权利就好了。到/etc/passwd 中，把 www 用户的配置修改一下，让他的登录 shell 变成/bin/bash</p><pre><code>vi /etc/passwd</code></pre><blockquote><p>www:x:1001:1001::/home/www:<font color='red'>/sbin/nologin</font><br>(建议注释原来的,重新复制一行修改)<br>www:x:1001:1001::/home/www:<font color='red'>/bin/bash</font></p></blockquote><p>然后 www 用户就有登录权限了。我们用 su www 重新切换一次，就会发现你现在是以 www 用户登录了。</p><pre><code>su www</code></pre><h3 id="第四步-为-www-这个用户生成密钥"><a href="#第四步-为-www-这个用户生成密钥" class="headerlink" title="第四步:为 www 这个用户生成密钥"></a>第四步:为 www 这个用户生成密钥</h3><p>第一步也有相关资料推荐</p><pre><code>ssh-keygen</code></pre><blockquote><p>注意:.ssh 的存放目录,一般是/home/当前用户名,然后接下来的操作都是回车<br>Enter file in which to save the key (<font color='red'>/home/www/.ssh/id_rsa</font>):</p></blockquote><h3 id="第五步-把生成的-ssh-key-加入到你的-gitlab"><a href="#第五步-把生成的-ssh-key-加入到你的-gitlab" class="headerlink" title="第五步:把生成的 ssh key 加入到你的 gitlab"></a>第五步:把生成的 ssh key 加入到你的 gitlab</h3><p><font color='red'>-&gt;注意:不建议把 root 密钥增加到 gitlab 上,root 的密钥用于登录管理服务器就好,把 www 用户所属的密钥增加到 gitlab 即可</font><br>不管你是用以下哪个 git 平台去管理,皆大同小异,目前列举比较流行的几种,一般都是在(个人设置-&gt;ssh 公钥-&gt;新增)</p><ol><li><a href="https://gitee.com/" target="_blank" rel="noopener">码云 https://gitee.com/</a></li><li><a href="http://code.aliyun.com/" target="_blank" rel="noopener">阿里云 http://code.aliyun.com/</a> <font color='red'>-&gt;我使用的是这个</font></li><li><a href="https://github.com/" target="_blank" rel="noopener">github https://github.com/</a></li><li><a href="https://coding.net/" target="_blank" rel="noopener">CODING https://coding.net/</a></li><li><a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">gitlab 内部搭建的 git 服务器</a></li><li>等待添加</li></ol><h3 id="第六步-拉取-gitlab-上的项目"><a href="#第六步-拉取-gitlab-上的项目" class="headerlink" title="第六步:拉取 gitlab 上的项目"></a>第六步:拉取 gitlab 上的项目</h3><pre><code>cd /home/wwwrootgit clone git@code.aliyun.com:personage/demo.git #改成你的项目地址,如果拉取不成功,说明你的密钥没弄好</code></pre><h3 id="第七步-配置-nginx"><a href="#第七步-配置-nginx" class="headerlink" title="第七步:配置 nginx"></a>第七步:配置 nginx</h3><p>因为我用 lnmp vhost add 增加了我的域名配置,自动在/home/wwwroot 下生成了 <a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">www.chengtianzhu.com</a> 目录,所以我直接修改</p><pre><code>chattr -i www.chengtianzhu.com/.user.ini  #lnmp生成时有个.user.ini,默认无法直接删除rm -rf www.chengtianzhu.com/ #删除默认生成的目录mv demo/ www.chengtianzhu.com/  把git拉取下来的项目重命名</code></pre><p>在浏览器中输入 <a href="http://www.chengtianzhu.com" target="_blank" rel="noopener">www.chengtianzhu.com</a>, 看是否能否访问,如果是子目录，需要自己去 nginx 配置中修改路径</p><h3 id="第九步-把自动拉取git的php代码放到项目中"><a href="#第九步-把自动拉取git的php代码放到项目中" class="headerlink" title="第九步:把自动拉取git的php代码放到项目中"></a>第九步:把自动拉取git的php代码放到项目中</h3><p>以<a href="http://www.chengtianzhu.com/update.php" target="_blank" rel="noopener">www.chengtianzhu.com/update.php</a> 为例,最好是单独配置个地址,因为是外部公共访问的:</p><pre><code>&lt;?phpclass Deploy {    /**     * A callback function to call after the deploy has finished.     *     * @var callback     */    public $post_deploy;    /**     * The name of the file that will be used for logging deployments. Set to     * FALSE to disable logging.     *     * @var string     */    private $_log = &#39;deployments.log&#39;;    /**     * The timestamp format used for logging.     *     * @link    http://www.php.net/manual/en/function.date.php     * @var     string     */    private $_date_format = &#39;Y-m-d H:i:sP&#39;;    /**     * The name of the branch to pull from.     *     * @var string     */    private $_branch = &#39;master&#39;;    /**     * The name of the remote to pull from.     *     * @var string     */    private $_remote = &#39;origin&#39;;    /**     * The directory where your website and git repository are located, can be     * a relative or absolute path     *     * @var string     */    private $_directory;    /**     * Sets up defaults.     *     * @param  string  $directory  Directory where your website is located     * @param  array   $data       Information about the deployment     */    public function __construct($directory, $options = array())    {        // Determine the directory path                        // Create the log file                file_put_contents($filename, &#39;&#39;);                // Allow anyone to write to log files                chmod($filename, 0666);            }            // Write the message into the log file            // Format: time --- type: message            file_put_contents($filename, date($this-&gt;_date_format).&#39; --- &#39;.$type.&#39;: &#39;.$message.PHP_EOL, FILE_APPEND);        }    }    /**     * Executes the necessary commands to deploy the website.     */    public function execute()    {        try        {            // Make sure we&#39;re in the right directory            chdir($this-&gt;_directory);            $this-&gt;log(&#39;Changing working directory... &#39;);            // Discard any changes to tracked files since our last deploy            exec(&#39;git reset --hard HEAD&#39;, $output);            $this-&gt;log(&#39;Reseting repository... &#39;.implode(&#39; &#39;, $output));            // Update the local repository            exec(&#39;git pull &#39;.$this-&gt;_remote.&#39; &#39;.$this-&gt;_branch, $output);            $this-&gt;log(&#39;Pulling in changes... &#39;.implode(&#39; &#39;, $output));            // Secure the .git directory            exec(&#39;chmod -R og-rx .git&#39;);            $this-&gt;log(&#39;Securing .git directory... &#39;);            if (is_callable($this-&gt;post_deploy))            {                call_user_func($this-&gt;post_deploy, $this-&gt;_data);            }            $this-&gt;log(&#39;Deployment successful.&#39;);        }        catch (Exception $e)        {            $this-&gt;log($e, &#39;ERROR&#39;);        }    }}// This is just an example$deploy = new Deploy(&#39;/home/wwwroot/www.chengtianzhu.com/&#39;); //修改成你的项目路径$deploy-&gt;execute();?&gt;</code></pre><h3 id="第十步-gitlab配置"><a href="#第十步-gitlab配置" class="headerlink" title="第十步:gitlab配置"></a>第十步:gitlab配置</h3><p>在项目–&gt;设置–&gt;WebHooks,增加刚才的<a href="http://www.chengtianzhu.com/update.php" target="_blank" rel="noopener">www.chengtianzhu.com/update.php</a><br>或者在setting–&gt;integrations,增加钩子<br>增加完成后可以点击&lt;测试钩子&gt;按钮测试一下.<br>显示200成功</p><blockquote><p>Hook executed successfully: HTTP 200<br>但是一般还是拉取不了代码,因为第九步的php代码使用了exec函数,默认是禁用的.<br>我们写一个简单的demo测试一下,在服务器环境下:<br>vi test.php<br>内容为:</p></blockquote><pre><code>&lt;?php    exec(&#39;php hello.php&#39;,$out,$status);    var_dump($out);?&gt;</code></pre><hr><p>再创建一个hello.php</p><blockquote><p>vi hello.php</p></blockquote><p>内容为:</p><pre><code>&lt;?php echo &#39;hello world&#39;;?&gt;</code></pre><hr><p>保存后,执行试一下</p><blockquote><p>php test.php</p></blockquote><p>提示:exec() has been disabled for security reasons，说明exec用不了</p><pre><code>PHP Notice:  Undefined variable: out in /home/wwwroot/www.chengtianzhu.com/test.php on line 2PHP Notice:  Undefined variable: return in /home/wwwroot/www.chengtianzhu.com/test.php on line 2PHP Warning:  exec() has been disabled for security reasons in /home/wwwroot/www.chengtianzhu.com/test.php on line 2PHP Notice:  Undefined variable: o in /home/wwwroot/www.chengtianzhu.com/test.php on line 3NULL</code></pre><h3 id="第十一步-开启exec"><a href="#第十一步-开启exec" class="headerlink" title="第十一步:开启exec"></a>第十一步:开启exec</h3><p>首先要用find命令查找到php.ini所在位置</p><blockquote><p>find / -name php.ini</p></blockquote><p>得到好多结果，关注最后台一条信息</p><pre><code>/usr/local/php/etc/php.ini</code></pre><p>用VI修改一下</p><pre><code>vi /usr/local/php/etc/php.ini</code></pre><p>查找disable_functions = passthru,exec,system,chroot或者查找disable_functions,把exec删掉保存.<br>修改后要重启才能生效，这里的重启并<font color='red'>不是重启nginx</font>-一定要注意。<br>我这里使用的是Lnmp，使用lnmp reload</p><pre><code>lnmp reload #或者 sudo /etc/init.d/php-fpm restart</code></pre><p>这个时间再执行第十步的php test.php,显示结果为:</p><pre><code>array(1) {  [0]=&gt;  string(11) &quot;hello world&quot;}</code></pre><p>这时表示已经可以执行钩子(update.php)，exec的代码了.回到你的本地测试一下，随便新增或者修改一些东西,再git提交.服务器显示已成功.</p><h3 id="第十二步-恢复执行用户的-nologin"><a href="#第十二步-恢复执行用户的-nologin" class="headerlink" title="第十二步:恢复执行用户的 nologin"></a>第十二步:恢复执行用户的 nologin</h3><p>不要忘了第三步的时候修改了/etc/passwd配置，现在把 www 用户的 nologin 选项恢复回去哟</p><pre><code>vi /etc/passwd</code></pre><blockquote><p>www:x:1001:1001::/home/www:<font color='red'>/bin/bash</font><br>(改回原来的)<br>www:x:1001:1001::/home/www:<font color='red'>/sbin/nologin</font></p></blockquote><h3 id="参考网站"><a href="#参考网站" class="headerlink" title="参考网站"></a>参考网站</h3><ol><li><a href="https://www.jianshu.com/p/59a54e2e27d3" target="_blank" rel="noopener">gitlab 通过 webhook 自动部署 https://www.jianshu.com/p/59a54e2e27d3</a></li><li><a href="https://segmentfault.com/a/1190000003908244?utm_source=tag-newest" target="_blank" rel="noopener">Webhook 实践 —— 自动部署 https://segmentfault.com/a/1190000003908244?utm_source=tag-newest</a></li><li><a href="https://www.jianshu.com/p/00bc0323e83f" target="_blank" rel="noopener">[后端]gitlab 之 webhook 自动部署 https://www.jianshu.com/p/00bc0323e83f</a></li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> webhook </tag>
+            
+            <tag> git自动 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Mac默认python切换升级为python3</title>
+      <link href="cz.github.io/2019/12/24/python/"/>
+      <url>cz.github.io/2019/12/24/python/</url>
+      
+        <content type="html"><![CDATA[<h3 id="先查看系统环境和python环境"><a href="#先查看系统环境和python环境" class="headerlink" title="先查看系统环境和python环境"></a>先查看系统环境和python环境</h3><p>我的电脑为环境为mac OS High Sierra 10.13.6</p><h3 id="第一步-在终端输入命令查看python"><a href="#第一步-在终端输入命令查看python" class="headerlink" title="第一步: 在终端输入命令查看python"></a><strong>第一步:</strong> 在终端输入命令查看python</h3><pre><code>    python -V</code></pre><p>显示如下:</p><blockquote><p>Python 2.7.10</p></blockquote><h3 id="第二步-然后用brew安装pyhton3（建议使用brew管理）"><a href="#第二步-然后用brew安装pyhton3（建议使用brew管理）" class="headerlink" title="第二步: 然后用brew安装pyhton3（建议使用brew管理）"></a><strong>第二步:</strong> 然后用brew安装pyhton3（<font color=red><strong>建议使用brew管理</strong></font>）</h3><pre><code>   brew install python3</code></pre><h3 id="第三步-查看python3所在路径"><a href="#第三步-查看python3所在路径" class="headerlink" title="第三步: 查看python3所在路径"></a><strong>第三步:</strong> 查看python3所在路径</h3><pre><code>    which python3</code></pre><p>显示如下:</p><blockquote><p>/usr/local/bin/python3</p></blockquote><h3 id="第四步-修改配置"><a href="#第四步-修改配置" class="headerlink" title="第四步: 修改配置"></a><strong>第四步:</strong> 修改配置</h3><blockquote><p>可以先在终端 cd /System/Library/Frameworks/Python.framework/Versions/2.7/bin/，看python2的路径是否存在 </p></blockquote><pre><code>    vi ~/.bash_profile</code></pre><p>增加以下3行:</p><pre><code>alias python2=&#39;/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7&#39;alias python3=&#39;/usr/local/bin/python3&#39; #第三步的路径,注意是不是一致的alias python=python3</code></pre><h3 id="第五步-让配置文件生效"><a href="#第五步-让配置文件生效" class="headerlink" title="第五步: 让配置文件生效"></a><strong>第五步:</strong> 让配置文件生效</h3><pre><code>source ~/.bash_profile</code></pre><h3 id="完工"><a href="#完工" class="headerlink" title="完工"></a>完工</h3><p>最后:<font color=red size=5>关闭终端</font>,重新输入python -v</p><pre><code>python -v</code></pre>]]></content>
+      
+      
       <categories>
-        <category>python</category>
+          
+          <category> python </category>
+          
       </categories>
-      <tags>
-        <tag>后端</tag>
-        <tag>python</tag>
-        <tag>python升级</tag>
-        <tag>python3</tag>
-      </tags>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> 后端 </tag>
+            
+            <tag> python </tag>
+            
+            <tag> python升级 </tag>
+            
+            <tag> python3 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>
